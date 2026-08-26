@@ -99,8 +99,7 @@
   .add-btn{border:1px solid var(--line); background:transparent; border-radius:999px; padding:6px 13px; font-size:0.78rem; font-weight:700; color:var(--ink); cursor:pointer;}
   .add-btn:hover{background:var(--sage); border-color:var(--sage); color:#fff;}
 
-  .fiche-field{display:inline-block; min-width:60px; border:1px solid var(--line); border-radius:8px; padding:4px 10px; background:var(--surface);}
-  [contenteditable="true"].fiche-field{cursor:text;}
+  [contenteditable="true"].fiche-field{display:inline-block; min-width:60px; border:1px solid var(--line); border-radius:8px; padding:4px 10px; background:var(--surface); cursor:text;}
   [contenteditable="true"].fiche-field:hover{border-color:var(--sage);}
   [contenteditable="true"].fiche-field:focus{border-color:var(--sage); outline:2px solid color-mix(in srgb, var(--sage) 25%, transparent); background:color-mix(in srgb, var(--sage) 8%, transparent);}
   [contenteditable="true"]:empty::before{content:attr(data-placeholder); color:var(--ink-soft); opacity:0.6; font-weight:400;}
@@ -410,7 +409,7 @@
     '<header class="site"><div class="site-inner">'+
       '<div class="brand"><img class="brand-mark" src="'+LOGO_SRC+'" alt="Mascotte Petit Coin Manga">Petit Coin Manga</div>'+
       '<div class="header-actions">'+
-        (ui.auth.session && ui.view === 'vendre' ? '<button class="edit-toggle'+(ui.editMode?' active':'')+'" type="button" id="edit-toggle">'+(ui.editMode?'✓ Édition en cours':'✏️ Modifier les fiches')+'</button>' : '')+
+        (ui.auth.session && ui.view === 'vendre' ? '<button class="edit-toggle'+(ui.editMode?' active':'')+'" type="button" id="edit-toggle">'+(ui.editMode?'✓ Édition en cours':'✏️ Éditer')+'</button>' : '')+
         authHeaderHTML()+
         '<a data-view="contact" class="header-contact-link'+(ui.view==='contact'?' active':'')+'">Contact</a>'+
         (ui.auth.session ? '<div class="cart-pill">🛍️ Panier · 0</div>' : '')+
