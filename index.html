@@ -230,9 +230,20 @@
         '</div>'+
         '<div>'+
           '<span class="internal-tag">Ajout photo</span>'+
-          '<h2 style="font-size:1.05rem; margin-bottom:6px;">Zone de dépôt</h2>'+
-          '<p>Glissez une ou plusieurs photos par annonce — couverture, dos, tranche, détail d\'un défaut éventuel.</p>'+
-          '<div style="border:2px dashed var(--line); border-radius:14px; padding:26px; text-align:center; color:var(--ink-soft); font-size:0.85rem; background:var(--surface);">📷 Glisser une photo ici, ou parcourir</div>'+
+          '<h2 style="font-size:1.05rem; margin-bottom:6px;">Photo de l\'annonce</h2>'+
+          '<p>Choisis une photo pour cette fiche — couverture, dos, tranche, détail d\'un défaut éventuel.</p>'+
+          '<input id="fiche-photo-input" type="file" accept="image/*" style="display:none;">'+
+          (ui.fichePhoto ?
+            '<div style="border:1px solid var(--line); border-radius:14px; padding:14px; text-align:center; background:var(--surface);">'+
+              '<img src="'+ui.fichePhoto+'" alt="Aperçu photo" style="max-width:100%; max-height:180px; border-radius:10px; display:block; margin:0 auto 12px;">'+
+              '<div style="display:flex; gap:8px; justify-content:center;">'+
+                '<label for="fiche-photo-input" class="btn btn-ghost" style="padding:6px 14px; font-size:0.78rem; cursor:pointer;">Changer la photo</label>'+
+                '<button id="fiche-photo-remove" type="button" class="btn btn-ghost" style="padding:6px 14px; font-size:0.78rem;">Retirer</button>'+
+              '</div>'+
+            '</div>'
+          :
+            '<label for="fiche-photo-input" style="cursor:pointer; display:block; border:2px dashed var(--line); border-radius:14px; padding:26px; text-align:center; color:var(--ink-soft); font-size:0.85rem; background:var(--surface);">📷 Cliquer ici pour choisir une photo</label>'
+          )+
         '</div>'+
       '</div>';
   }
@@ -358,7 +369,7 @@
     return ''+
     '<div class="wrap vendre-page">'+
       '<button id="home-btn" class="btn btn-ghost" type="button" style="margin-bottom:18px; padding:7px 16px; font-size:0.82rem;">← Accueil</button>'+
-      '<span class="eyebrow">Ton espace vendeuse</span>'+
+      '<span class="eyebrow">Je vends un manga</span>'+
       '<h1>Vendre un manga</h1>'+
       (ui.auth.session ? sellerHTML() : '<p style="text-align:center; color:var(--ink-soft); padding:24px 0;">Connecte-toi via le bouton en haut à droite pour accéder à cet espace.</p>')+
     '</div>';
@@ -625,12 +636,29 @@
         tag: 'Manga',
         cat: 'manga',
         hue: hues[STATE.items.length % hues.length],
-        img: LOGO_SRC
+        img: ui.fichePhoto || LOGO_SRC
       });
       STATE.fiche = { titre: '', etat: '', origine: '', achat: '', vente: '', remise: '' };
       ui.editMode = false;
+      ui.fichePhoto = null;
       ui.addMsg = '✓ Ajouté au catalogue';
       markDirty();
+      render();
+    });
+    var fichePhotoInput = document.getElementById('fiche-photo-input');
+    if (fichePhotoInput) fichePhotoInput.addEventListener('change', function(ev){
+      var file = ev.target.files && ev.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(){
+        ui.fichePhoto = reader.result;
+        render();
+      };
+      reader.readAsDataURL(file);
+    });
+    var fichePhotoRemove = document.getElementById('fiche-photo-remove');
+    if (fichePhotoRemove) fichePhotoRemove.addEventListener('click', function(){
+      ui.fichePhoto = null;
       render();
     });
   }
