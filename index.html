@@ -98,6 +98,16 @@
   .add-row{display:flex; justify-content:space-between; align-items:center; margin-top:2px;}
   .add-btn{border:1px solid var(--line); background:transparent; border-radius:999px; padding:6px 13px; font-size:0.78rem; font-weight:700; color:var(--ink); cursor:pointer;}
   .add-btn:hover{background:var(--sage); border-color:var(--sage); color:#fff;}
+  .add-btn:disabled{opacity:0.5; cursor:default;}
+  .add-btn:disabled:hover{background:transparent; border-color:var(--line); color:var(--ink);}
+  .cover.is-sold img{filter:grayscale(1) brightness(0.6);}
+  .sold-ribbon{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(20,18,16,0.18);}
+  .sold-ribbon span{background:rgba(20,18,16,0.88); color:#fff; font-weight:800; font-size:0.82rem; text-transform:uppercase; letter-spacing:0.08em; padding:6px 20px; border-radius:6px; transform:rotate(-8deg); box-shadow:0 3px 10px rgba(0,0,0,0.3);}
+  .card-actions{display:flex; gap:8px; padding:0 16px 14px;}
+  .card-actions button{flex:1; border-radius:999px; padding:6px 8px; font-size:0.72rem; font-weight:700; cursor:pointer; border:1px solid var(--line); background:transparent; color:var(--ink);}
+  .card-actions .sold-toggle-btn.active{background:var(--gold-bg); border-color:var(--gold); color:var(--gold);}
+  .card-actions .delete-item-btn{color:#a8493f; border-color:#e3c3bd;}
+  .card-actions .delete-item-btn:hover{background:#fbebe8;}
 
   [contenteditable="true"].fiche-field{display:inline-block; min-width:60px; border:1px solid var(--line); border-radius:8px; padding:4px 10px; background:var(--surface); cursor:text;}
   [contenteditable="true"].fiche-field:hover{border-color:var(--sage);}
@@ -187,9 +197,10 @@
         '<span class="photo-note">photo à venir</span>';
     return ''+
       '<div class="card">'+
-        '<div class="cover" style="background:linear-gradient(160deg,'+it.hue+', color-mix(in srgb, '+it.hue+' 60%, var(--ink) 15%))">'+
+        '<div class="cover'+(it.sold?' is-sold':'')+'" style="background:linear-gradient(160deg,'+it.hue+', color-mix(in srgb, '+it.hue+' 60%, var(--ink) 15%))">'+
           '<span class="badge">'+esc(it.tag)+'</span>'+
           coverInner+
+          (it.sold ? '<div class="sold-ribbon"><span>Vendu</span></div>' : '')+
         '</div>'+
         '<div class="card-body">'+
           '<h3'+ce(ui.editMode)+' data-idx="'+i+'" data-field="t">'+esc(it.t)+'</h3>'+
@@ -198,8 +209,12 @@
             '<span class="price-old"'+ce(ui.editMode)+' data-idx="'+i+'" data-field="old">'+esc(it.old)+'</span>'+
             '<span class="price-new"'+ce(ui.editMode)+' data-idx="'+i+'" data-field="now">'+esc(it.now)+'</span>'+
           '</div>'+
-          '<div class="add-row"><span style="font-size:0.75rem; color:var(--ink-soft);">Stock: 1</span><button class="add-btn" type="button">Ajouter</button></div>'+
+          '<div class="add-row"><span style="font-size:0.75rem; color:var(--ink-soft);">'+(it.sold?'Vendu':'Stock: 1')+'</span><button class="add-btn" type="button"'+(it.sold?' disabled':'')+'>'+(it.sold?'Vendu':'Ajouter')+'</button></div>'+
         '</div>'+
+        (ui.editMode ? '<div class="card-actions">'+
+          '<button class="sold-toggle-btn'+(it.sold?' active':'')+'" type="button" data-sold-idx="'+i+'">'+(it.sold?'↺ Remettre en vente':'✓ Marquer vendu')+'</button>'+
+          '<button class="delete-item-btn" type="button" data-delete-idx="'+i+'">🗑 Supprimer</button>'+
+        '</div>' : '')+
       '</div>';
   }
 
@@ -580,6 +595,26 @@
         var f = el.getAttribute('data-field');
         STATE.items[i][f] = el.textContent;
         markDirty();
+      });
+    });
+
+    root.querySelectorAll('[data-sold-idx]').forEach(function(el){
+      el.addEventListener('click', function(){
+        var i = parseInt(el.getAttribute('data-sold-idx'), 10);
+        STATE.items[i].sold = !STATE.items[i].sold;
+        markDirty();
+        render();
+      });
+    });
+
+    root.querySelectorAll('[data-delete-idx]').forEach(function(el){
+      el.addEventListener('click', function(){
+        var i = parseInt(el.getAttribute('data-delete-idx'), 10);
+        var titre = STATE.items[i] && STATE.items[i].t;
+        if (!window.confirm('Supprimer définitivement "'+titre+'" du catalogue ?')) return;
+        STATE.items.splice(i, 1);
+        markDirty();
+        render();
       });
     });
 
