@@ -199,7 +199,6 @@
     var achat = money(f.achat), vente = money(f.vente);
     var marge = (achat !== null && vente !== null) ? (vente - achat).toFixed(2).replace('.', ',') + ' €' : '—';
     return ''+
-      '<div style="text-align:right; margin-bottom:10px;"><button id="logout-btn" class="btn btn-ghost" type="button" style="padding:6px 14px; font-size:0.78rem;">Se déconnecter</button></div>'+
       '<div class="seller-box">'+
         '<div>'+
           '<span class="internal-tag">Fiche interne · usage vendeuse</span>'+
