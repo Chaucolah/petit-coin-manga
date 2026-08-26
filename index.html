@@ -208,6 +208,7 @@
     var f = STATE.fiche;
     var achat = money(f.achat), vente = money(f.vente);
     var marge = (achat !== null && vente !== null) ? (vente - achat).toFixed(2).replace('.', ',') + ' €' : '—';
+    var canAdd = !!(f.titre && f.titre.trim() && f.origine && f.origine.trim() && f.vente && f.vente.trim());
     return ''+
       '<div class="seller-box">'+
         '<div>'+
@@ -223,6 +224,10 @@
             '<li><span>% de réduction</span><span class="percent-field"><span class="fiche-field"'+ce(ui.editMode)+' data-fiche="remise" data-placeholder="0">'+esc(f.remise)+'</span><span class="percent-sign">%</span></span></li>'+
             '<li class="margin-line"><span>Marge estimée</span><span id="marge-val">'+marge+'</span></li>'+
           '</ul>'+
+          '<div style="margin-top:16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">'+
+            '<button id="add-product-btn" class="btn btn-primary" type="button"'+(canAdd?'':' disabled')+'>+ Ajouter comme nouveau produit</button>'+
+            (ui.addMsg ? '<span style="font-size:0.82rem; color:var(--sage-ink); font-weight:600;">'+esc(ui.addMsg)+'</span>' : '')+
+          '</div>'+
         '</div>'+
         '<div>'+
           '<span class="internal-tag">Ajout photo</span>'+
@@ -607,6 +612,27 @@
       ui.view = 'boutique';
       render();
       window.scrollTo({top:0, behavior:'auto'});
+    });
+    var addProductBtn = document.getElementById('add-product-btn');
+    if (addProductBtn) addProductBtn.addEventListener('click', function(){
+      var f = STATE.fiche;
+      if (!f.titre || !f.titre.trim() || !f.origine || !f.origine.trim() || !f.vente || !f.vente.trim()) return;
+      var hues = ['var(--sage)', 'var(--lavender)', 'var(--gold)'];
+      STATE.items.push({
+        t: f.titre.trim(),
+        d: (f.etat && f.etat.trim()) || 'Bon état général, à compléter avec tes propres notes.',
+        old: f.origine.trim(),
+        now: f.vente.trim(),
+        tag: 'Manga',
+        cat: 'manga',
+        hue: hues[STATE.items.length % hues.length],
+        img: LOGO_SRC
+      });
+      STATE.fiche = { titre: '', etat: '', origine: '', achat: '', vente: '', remise: '' };
+      ui.editMode = false;
+      ui.addMsg = '✓ Ajouté au catalogue';
+      markDirty();
+      render();
     });
   }
 
