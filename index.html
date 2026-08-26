@@ -386,10 +386,6 @@
     root.innerHTML = ''+
     '<header class="site"><div class="site-inner">'+
       '<div class="brand"><img class="brand-mark" src="'+LOGO_SRC+'" alt="Mascotte Petit Coin Manga">Petit Coin Manga</div>'+
-      '<nav class="site-nav">'+
-        '<a href="#catalogue" data-view="boutique">Catalogue</a>'+
-        '<a href="#vendre" data-view="vendre">Vendre un manga</a>'+
-      '</nav>'+
       '<div class="header-actions">'+
         (ui.auth.session ? '<button class="edit-toggle'+(ui.editMode?' active':'')+'" type="button" id="edit-toggle">'+(ui.editMode?'✓ Édition en cours':'✏️ Modifier les fiches')+'</button>' : '')+
         authHeaderHTML()+
@@ -402,7 +398,7 @@
       '<section class="hero"><div class="hero-inner"><div>'+
         '<span class="eyebrow">Seconde vie pour vos mangas</span>'+
         '<h1>Des mangas et objets geek qui méritent une nouvelle étagère.</h1>'+
-        '<p class="lead">Chaque pièce est décrite, photographiée et évaluée à la main — état, édition, prix d\'origine et prix bradé, toujours transparents.</p>'+
+        '<p class="lead">Chaque pièce est décrite, photographiée et évaluée à la main : état, édition, prix d\'origine et prix bradé, toujours transparents.</p>'+
         '<div class="hero-actions"><a class="btn btn-primary" href="#catalogue">Voir le catalogue</a><a class="btn btn-ghost" href="#vendre" data-view="vendre">Je vends un manga</a></div>'+
       '</div><div class="hero-art"><svg viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">'+
         '<rect x="18" y="20" width="34" height="110" rx="3" fill="rgba(255,255,255,0.85)"/>'+
