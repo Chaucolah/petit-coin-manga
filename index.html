@@ -353,6 +353,7 @@
   function vendrePageHTML(){
     return ''+
     '<div class="wrap vendre-page">'+
+      '<button id="home-btn" class="btn btn-ghost" type="button" style="margin-bottom:18px; padding:7px 16px; font-size:0.82rem;">← Accueil</button>'+
       '<span class="eyebrow">Ton espace vendeuse</span>'+
       '<h1>Vendre un manga</h1>'+
       (ui.auth.session ? sellerHTML() : '<p style="text-align:center; color:var(--ink-soft); padding:24px 0;">Connecte-toi via le bouton en haut à droite pour accéder à cet espace.</p>')+
@@ -601,6 +602,12 @@
     });
     var logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) logoutBtn.addEventListener('click', doLogout);
+    var homeBtn = document.getElementById('home-btn');
+    if (homeBtn) homeBtn.addEventListener('click', function(){
+      ui.view = 'boutique';
+      render();
+      window.scrollTo({top:0, behavior:'auto'});
+    });
   }
 
   function markDirty(){
