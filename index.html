@@ -50,6 +50,9 @@
   .header-actions{display:flex; align-items:center; gap:10px;}
   .cart-pill, .edit-toggle{display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:999px; padding:8px 14px; font-size:0.88rem; font-weight:600; background:var(--surface);}
   .edit-toggle{cursor:pointer; color:var(--ink);}
+  .auth-dropdown{position:absolute; top:calc(100% + 10px); right:0; width:280px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; z-index:20; text-align:left;}
+  .auth-dropdown input{width:100%; font-family:inherit; font-size:0.88rem; padding:9px 11px; border:1px solid var(--line); border-radius:9px; background:var(--bg); color:var(--ink);}
+  .auth-dropdown input:focus{outline:2px solid var(--sage); border-color:var(--sage);}
   .edit-toggle.active{background:var(--sage); border-color:var(--sage); color:#fff;}
 
   .hero{padding:56px 0 40px;}
@@ -143,8 +146,9 @@
   var STATE = JSON.parse(document.getElementById('state-data').textContent);
   var OWNER_EMAIL = 'marie-lam-21@hotmail.fr';
   var ui = { view: 'boutique', filter: 'all', editMode: false, dirty: false, status: '', contactState: 'idle',
-    auth: { session: null, mode: 'signup', status: '', busy: false } };
+    auth: { session: null, mode: 'signup', status: '', busy: false, open: false } };
   var root = document.getElementById('root');
+  var outsideClickBound = false;
   var artifactCap = null;
   if (window.claude && window.claude.use) {
     window.claude.use('artifact').then(function(cap){ artifactCap = cap; });
@@ -210,27 +214,44 @@
       '</div>';
   }
 
-  function authGateHTML(){
+  function authHeaderHTML(){
+    if (ui.auth.session) {
+      return '<div style="position:relative;">'+
+        '<button class="edit-toggle" type="button" id="auth-btn">✓ Connectée</button>'+
+        (ui.auth.open ? authDropdownLoggedInHTML() : '')+
+      '</div>';
+    }
+    return '<div style="position:relative;">'+
+      '<button class="edit-toggle" type="button" id="auth-btn">S\'inscrire / Se connecter</button>'+
+      (ui.auth.open ? authDropdownHTML() : '')+
+    '</div>';
+  }
+
+  function authDropdownHTML(){
     var a = ui.auth;
     var isSignup = a.mode === 'signup';
     return ''+
-      '<div class="seller-box" style="grid-template-columns:1fr; max-width:420px; margin:0 auto;">'+
-        '<div>'+
-          '<span class="internal-tag">Espace privé</span>'+
-          '<h2>'+(isSignup ? 'Créer ton espace vendeuse' : 'Se connecter à ton espace')+'</h2>'+
-          '<p>La fiche interne et l\'ajout de photos sont réservés à toi seule, même si le site est public.</p>'+
-          '<form id="auth-form" style="display:flex; flex-direction:column; gap:14px; margin-top:16px;">'+
-            '<div class="form-field"><label for="auth-email">Email</label><input id="auth-email" type="email" required autocomplete="email"></div>'+
-            '<div class="form-field"><label for="auth-password">Mot de passe</label><input id="auth-password" type="password" minlength="6" required autocomplete="'+(isSignup?'new-password':'current-password')+'"></div>'+
-            (a.status ? '<p class="form-status'+(a.status.indexOf('créé')>-1?' ok':' err')+'">'+esc(a.status)+'</p>' : '')+
-            '<button class="btn btn-primary" type="submit"'+(a.busy?' disabled':'')+'>'+(a.busy ? 'Un instant…' : (isSignup ? 'Créer mon compte' : 'Se connecter'))+'</button>'+
-          '</form>'+
-          '<p style="margin-top:14px; font-size:0.85rem; color:var(--ink-soft);">'+
-            (isSignup ? 'Déjà un compte ? ' : 'Pas encore de compte ? ')+
-            '<a href="#" id="auth-toggle" style="color:var(--sage-ink); font-weight:700; text-decoration:none;">'+(isSignup ? 'Se connecter' : 'Créer un compte')+'</a>'+
-          '</p>'+
-        '</div>'+
+      '<div class="auth-dropdown">'+
+        '<h3 style="margin:0 0 4px; font-size:1rem;">'+(isSignup ? 'Créer ton espace' : 'Se connecter')+'</h3>'+
+        '<p style="margin:0 0 14px; font-size:0.78rem; color:var(--ink-soft);">Fiche interne et photos réservées à toi seule.</p>'+
+        '<form id="auth-form" style="display:flex; flex-direction:column; gap:10px;">'+
+          '<input id="auth-email" type="email" placeholder="Email" required autocomplete="email">'+
+          '<input id="auth-password" type="password" placeholder="Mot de passe" minlength="6" required autocomplete="'+(isSignup?'new-password':'current-password')+'">'+
+          (a.status ? '<p class="form-status'+(a.status.indexOf('créé')>-1?' ok':' err')+'" style="margin:0; font-size:0.78rem;">'+esc(a.status)+'</p>' : '')+
+          '<button class="btn btn-primary" type="submit" style="padding:9px 16px; font-size:0.85rem; justify-content:center;"'+(a.busy?' disabled':'')+'>'+(a.busy ? 'Un instant…' : (isSignup ? 'Créer mon compte' : 'Se connecter'))+'</button>'+
+        '</form>'+
+        '<p style="margin:12px 0 0; font-size:0.78rem; color:var(--ink-soft);">'+
+          (isSignup ? 'Déjà un compte ? ' : 'Pas encore de compte ? ')+
+          '<a href="#" id="auth-toggle" style="color:var(--sage-ink); font-weight:700; text-decoration:none;">'+(isSignup ? 'Se connecter' : 'Créer un compte')+'</a>'+
+        '</p>'+
       '</div>';
+  }
+
+  function authDropdownLoggedInHTML(){
+    return '<div class="auth-dropdown" style="width:220px;">'+
+      '<p style="margin:0 0 14px; font-size:0.85rem;">Connectée en tant que propriétaire.</p>'+
+      '<button class="btn btn-ghost" type="button" id="logout-btn" style="width:100%; justify-content:center; padding:8px 14px; font-size:0.82rem;">Se déconnecter</button>'+
+    '</div>';
   }
 
   function authRequest(path, body){
@@ -277,6 +298,7 @@
         ui.auth.session = r.data;
         saveSession(r.data);
         ui.auth.status = '';
+        ui.auth.open = false;
       }
     } else if (r.ok && isSignup) {
       ui.auth.status = 'Compte créé. Vérifie ta boîte mail pour confirmer, puis connecte-toi.';
@@ -359,10 +381,10 @@
       '</nav>'+
       '<div class="header-actions">'+
         '<button class="edit-toggle'+(ui.editMode?' active':'')+'" type="button" id="edit-toggle">'+(ui.editMode?'✓ Édition en cours':'✏️ Modifier les fiches')+'</button>'+
+        authHeaderHTML()+
         '<div class="cart-pill">🛍️ Panier · 0</div>'+
       '</div>'+
     '</div></header>'+
-    (!ui.auth.session ? '<div class="wrap" style="padding-top:24px;">'+authGateHTML()+'</div>' : '')+
     '<main class="wrap">'+
     (ui.view === 'contact' ? contactHTML().replace('wrap contact-page', 'contact-page') : ''+
       '<section class="hero"><div class="hero-inner"><div>'+
@@ -381,7 +403,7 @@
         '<div class="filters">'+chips+'</div>'+
         '<div class="grid">'+cards+'</div>'+
       '</section>'+
-      '<section class="seller" id="vendre">'+(ui.auth.session ? sellerHTML() : '<p style="text-align:center; color:var(--ink-soft); padding:24px 0;">Connecte-toi en haut de page pour accéder à cet espace.</p>')+'</section>')+
+      '<section class="seller" id="vendre">'+(ui.auth.session ? sellerHTML() : '<p style="text-align:center; color:var(--ink-soft); padding:24px 0;">Connecte-toi via le bouton en haut à droite pour accéder à cet espace.</p>')+'</section>')+
     '</main>'+
     '<footer class="site"><div class="wrap footer-inner">'+
       '<span>© 2026 Petit Coin Manga — ébauche de site, à affiner ensemble.</span><span>contact@petitcoinmanga.fr</span>'+
@@ -400,6 +422,22 @@
       ui.editMode = !ui.editMode;
       render();
     });
+
+    var authBtn = document.getElementById('auth-btn');
+    if (authBtn) authBtn.addEventListener('click', function(ev){
+      ev.stopPropagation();
+      ui.auth.open = !ui.auth.open;
+      render();
+    });
+    if (!outsideClickBound) {
+      outsideClickBound = true;
+      document.addEventListener('click', function(ev){
+        if (ui.auth.open && !ev.target.closest('.auth-dropdown') && ev.target.id !== 'auth-btn') {
+          ui.auth.open = false;
+          render();
+        }
+      });
+    }
 
     root.querySelectorAll('.chip').forEach(function(chip){
       chip.addEventListener('click', function(){
