@@ -33,6 +33,8 @@
 
   .contact-page{padding:56px 0 72px; display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start;}
   .contact-page h1{font-size:2rem; margin:0 0 12px;}
+  .vendre-page{padding:56px 0 72px;}
+  .vendre-page h1{font-size:2rem; margin:0 0 24px;}
   .contact-page p.lead{color:var(--ink-soft); font-size:1rem; max-width:42ch; margin:0 0 22px;}
   .contact-info{display:flex; flex-direction:column; gap:10px; font-size:0.92rem; color:var(--ink-soft);}
   .contact-info strong{color:var(--ink);}
@@ -342,6 +344,15 @@
     render();
   }
 
+  function vendrePageHTML(){
+    return ''+
+    '<div class="wrap vendre-page">'+
+      '<span class="eyebrow">Ton espace vendeuse</span>'+
+      '<h1>Vendre un manga</h1>'+
+      (ui.auth.session ? sellerHTML() : '<p style="text-align:center; color:var(--ink-soft); padding:24px 0;">Connecte-toi via le bouton en haut à droite pour accéder à cet espace.</p>')+
+    '</div>';
+  }
+
   function contactHTML(){
     var statusHTML = '';
     if (ui.contactState === 'sending') statusHTML = '<p class="form-status">Envoi en cours…</p>';
@@ -394,7 +405,8 @@
       '</div>'+
     '</div></header>'+
     '<main class="wrap">'+
-    (ui.view === 'contact' ? contactHTML().replace('wrap contact-page', 'contact-page') : ''+
+    (ui.view === 'contact' ? contactHTML().replace('wrap contact-page', 'contact-page') :
+     ui.view === 'vendre' ? vendrePageHTML().replace('wrap vendre-page', 'vendre-page') : ''+
       '<section class="hero"><div class="hero-inner"><div>'+
         '<span class="eyebrow">Seconde vie pour vos mangas</span>'+
         '<h1>Des mangas et objets geek qui méritent une nouvelle étagère.</h1>'+
@@ -410,8 +422,7 @@
         '<div class="section-head"><div><h2>Catalogue</h2><p class="sub">'+STATE.items.length+' pièces en ligne · nouveaux arrivages chaque semaine</p></div></div>'+
         '<div class="filters">'+chips+'</div>'+
         '<div class="grid">'+cards+'</div>'+
-      '</section>'+
-      '<section class="seller" id="vendre">'+(ui.auth.session ? sellerHTML() : '<p style="text-align:center; color:var(--ink-soft); padding:24px 0;">Connecte-toi via le bouton en haut à droite pour accéder à cet espace.</p>')+'</section>')+
+      '</section>')+
     '</main>'+
     '<footer class="site"><div class="wrap footer-inner">'+
       '<div class="footer-brand"><img class="footer-mark" src="'+LOGO_SRC+'" alt="">Petit Coin Manga</div>'+
@@ -469,20 +480,18 @@
           ui.contactState = 'idle';
           render();
         } else if (view === 'vendre') {
+          ev.preventDefault();
           if (!ui.auth.session) {
-            ev.preventDefault();
             ui.view = 'boutique';
             ui.auth.open = true;
             render();
             var authBtn = document.getElementById('auth-btn');
             if (authBtn) authBtn.scrollIntoView({block:'center'});
-          } else if (ui.view === 'contact') {
-            ui.view = 'boutique';
+          } else {
+            ui.view = 'vendre';
             render();
-            var sellTarget = document.querySelector('#vendre');
-            if (sellTarget) sellTarget.scrollIntoView();
           }
-        } else if (ui.view === 'contact') {
+        } else if (ui.view === 'contact' || ui.view === 'vendre') {
           ui.view = 'boutique';
           render();
           var target = document.querySelector(link.getAttribute('href'));
