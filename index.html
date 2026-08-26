@@ -99,9 +99,10 @@
   .add-btn{border:1px solid var(--line); background:transparent; border-radius:999px; padding:6px 13px; font-size:0.78rem; font-weight:700; color:var(--ink); cursor:pointer;}
   .add-btn:hover{background:var(--sage); border-color:var(--sage); color:#fff;}
 
-  [contenteditable="true"]{display:inline-block; min-width:60px; border:1px solid var(--line); border-radius:8px; padding:4px 10px; background:var(--surface); cursor:text;}
-  [contenteditable="true"]:hover{border-color:var(--sage);}
-  [contenteditable="true"]:focus{border-color:var(--sage); outline:2px solid color-mix(in srgb, var(--sage) 25%, transparent); background:color-mix(in srgb, var(--sage) 8%, transparent);}
+  .fiche-field{display:inline-block; min-width:60px; border:1px solid var(--line); border-radius:8px; padding:4px 10px; background:var(--surface);}
+  [contenteditable="true"].fiche-field{cursor:text;}
+  [contenteditable="true"].fiche-field:hover{border-color:var(--sage);}
+  [contenteditable="true"].fiche-field:focus{border-color:var(--sage); outline:2px solid color-mix(in srgb, var(--sage) 25%, transparent); background:color-mix(in srgb, var(--sage) 8%, transparent);}
   [contenteditable="true"]:empty::before{content:attr(data-placeholder); color:var(--ink-soft); opacity:0.6; font-weight:400;}
   .field-list li{align-items:center;}
   .percent-field{display:inline-flex; align-items:baseline; gap:2px;}
@@ -214,12 +215,12 @@
           '<h2>Un suivi simple derrière chaque annonce</h2>'+
           '<p>Le prix d\'achat et la marge restent privés — seuls la description, le prix d\'origine et le prix de vente sont visibles côté boutique.</p>'+
           '<ul class="field-list">'+
-            '<li><span>Titre</span><span'+ce(ui.editMode)+' data-fiche="titre" data-placeholder="Titre du manga">'+esc(f.titre)+'</span></li>'+
-            '<li><span>État</span><span'+ce(ui.editMode)+' data-fiche="etat" data-placeholder="Bon état général">'+esc(f.etat)+'</span></li>'+
-            '<li><span>Prix d\'origine</span><span'+ce(ui.editMode)+' data-fiche="origine" data-placeholder="0,00 €">'+esc(f.origine)+'</span></li>'+
-            '<li><span>Prix d\'achat (privé)</span><span'+ce(ui.editMode)+' data-fiche="achat" data-placeholder="0,00 €">'+esc(f.achat)+'</span></li>'+
-            '<li><span>Prix de vente</span><span'+ce(ui.editMode)+' data-fiche="vente" data-placeholder="0,00 €">'+esc(f.vente)+'</span></li>'+
-            '<li><span>% de réduction</span><span class="percent-field"><span'+ce(ui.editMode)+' data-fiche="remise" data-placeholder="0">'+esc(f.remise)+'</span><span class="percent-sign">%</span></span></li>'+
+            '<li><span>Titre</span><span class="fiche-field"'+ce(ui.editMode)+' data-fiche="titre" data-placeholder="Titre du manga">'+esc(f.titre)+'</span></li>'+
+            '<li><span>État</span><span class="fiche-field"'+ce(ui.editMode)+' data-fiche="etat" data-placeholder="Bon état général">'+esc(f.etat)+'</span></li>'+
+            '<li><span>Prix d\'origine</span><span class="fiche-field"'+ce(ui.editMode)+' data-fiche="origine" data-placeholder="0,00 €">'+esc(f.origine)+'</span></li>'+
+            '<li><span>Prix d\'achat (privé)</span><span class="fiche-field"'+ce(ui.editMode)+' data-fiche="achat" data-placeholder="0,00 €">'+esc(f.achat)+'</span></li>'+
+            '<li><span>Prix de vente</span><span class="fiche-field"'+ce(ui.editMode)+' data-fiche="vente" data-placeholder="0,00 €">'+esc(f.vente)+'</span></li>'+
+            '<li><span>% de réduction</span><span class="percent-field"><span class="fiche-field"'+ce(ui.editMode)+' data-fiche="remise" data-placeholder="0">'+esc(f.remise)+'</span><span class="percent-sign">%</span></span></li>'+
             '<li class="margin-line"><span>Marge estimée</span><span id="marge-val">'+marge+'</span></li>'+
           '</ul>'+
         '</div>'+
