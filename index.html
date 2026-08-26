@@ -334,6 +334,7 @@
 
   function doLogout(){
     ui.auth.session = null;
+    ui.editMode = false;
     clearSession();
     render();
   }
@@ -388,7 +389,7 @@
         '<a data-view="contact" class="'+(ui.view==='contact'?'active':'')+'">Contact</a>'+
       '</nav>'+
       '<div class="header-actions">'+
-        '<button class="edit-toggle'+(ui.editMode?' active':'')+'" type="button" id="edit-toggle">'+(ui.editMode?'✓ Édition en cours':'✏️ Modifier les fiches')+'</button>'+
+        (ui.auth.session ? '<button class="edit-toggle'+(ui.editMode?' active':'')+'" type="button" id="edit-toggle">'+(ui.editMode?'✓ Édition en cours':'✏️ Modifier les fiches')+'</button>' : '')+
         authHeaderHTML()+
         '<div class="cart-pill">🛍️ Panier · 0</div>'+
       '</div>'+
