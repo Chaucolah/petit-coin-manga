@@ -99,10 +99,11 @@
   .add-btn{border:1px solid var(--line); background:transparent; border-radius:999px; padding:6px 13px; font-size:0.78rem; font-weight:700; color:var(--ink); cursor:pointer;}
   .add-btn:hover{background:var(--sage); border-color:var(--sage); color:#fff;}
 
-  [contenteditable="true"]{outline:1px dashed color-mix(in srgb, var(--sage) 55%, transparent); border-radius:4px; padding:1px 4px; margin:-1px -4px; cursor:text;}
-  [contenteditable="true"]:hover{outline-color:var(--sage);}
-  [contenteditable="true"]:focus{outline:2px solid var(--sage); background:color-mix(in srgb, var(--sage) 10%, transparent);}
+  [contenteditable="true"]{display:inline-block; min-width:60px; border:1px solid var(--line); border-radius:8px; padding:4px 10px; background:var(--surface); cursor:text;}
+  [contenteditable="true"]:hover{border-color:var(--sage);}
+  [contenteditable="true"]:focus{border-color:var(--sage); outline:2px solid color-mix(in srgb, var(--sage) 25%, transparent); background:color-mix(in srgb, var(--sage) 8%, transparent);}
   [contenteditable="true"]:empty::before{content:attr(data-placeholder); color:var(--ink-soft); opacity:0.6; font-weight:400;}
+  .field-list li{align-items:center;}
   .percent-field{display:inline-flex; align-items:baseline; gap:2px;}
   .percent-field .percent-sign{font-weight:700;}
 
