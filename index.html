@@ -410,7 +410,7 @@
     '<header class="site"><div class="site-inner">'+
       '<div class="brand"><img class="brand-mark" src="'+LOGO_SRC+'" alt="Mascotte Petit Coin Manga">Petit Coin Manga</div>'+
       '<div class="header-actions">'+
-        (ui.auth.session ? '<button class="edit-toggle'+(ui.editMode?' active':'')+'" type="button" id="edit-toggle">'+(ui.editMode?'✓ Édition en cours':'✏️ Modifier les fiches')+'</button>' : '')+
+        (ui.auth.session && ui.view === 'vendre' ? '<button class="edit-toggle'+(ui.editMode?' active':'')+'" type="button" id="edit-toggle">'+(ui.editMode?'✓ Édition en cours':'✏️ Modifier les fiches')+'</button>' : '')+
         authHeaderHTML()+
         '<a data-view="contact" class="header-contact-link'+(ui.view==='contact'?' active':'')+'">Contact</a>'+
         (ui.auth.session ? '<div class="cart-pill">🛍️ Panier · 0</div>' : '')+
