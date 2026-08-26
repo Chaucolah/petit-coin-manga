@@ -58,7 +58,7 @@
   .hero{padding:56px 0 40px;}
   .hero-inner{display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center;}
   .eyebrow{display:inline-flex; align-items:center; gap:8px; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--sage-ink); background:color-mix(in srgb, var(--sage) 16%, transparent); border-radius:999px; padding:6px 12px; margin-bottom:18px;}
-  .hero h1{font-size:clamp(2rem, 4vw, 2.9rem); margin:0 0 16px; line-height:1.12;}
+  .hero h1{font-size:clamp(2.1rem, 4.4vw, 3.2rem); margin:0 0 16px; line-height:1.08; font-weight:800; letter-spacing:-0.015em;}
   .hero p.lead{color:var(--ink-soft); font-size:1.05rem; max-width:46ch; margin:0 0 26px;}
   .hero-actions{display:flex; gap:12px; flex-wrap:wrap;}
   .btn{border:none; border-radius:999px; padding:13px 24px; font-family:inherit; font-weight:700; font-size:0.95rem; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px;}
@@ -75,7 +75,8 @@
   .chip.active{background:var(--ink); color:var(--bg); border-color:var(--ink);}
 
   section.catalog{padding:8px 0 64px;}
-  .catalog h2{font-size:1.5rem; margin:0 0 4px;}
+  .catalog h2{font-size:2rem; margin:0 0 4px; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em;}
+  .section-head{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px; margin-bottom:4px;}
   .catalog .sub{color:var(--ink-soft); font-size:0.94rem; margin:0 0 24px;}
   .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:20px;}
   .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column;}
@@ -108,8 +109,16 @@
   .margin-line span:last-child{color:var(--sage-ink); background:color-mix(in srgb, var(--sage) 18%, transparent); padding:2px 8px; border-radius:6px;}
   .internal-tag{display:inline-block; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--gold); background:var(--gold-bg); border-radius:6px; padding:3px 8px; margin-bottom:10px;}
 
-  footer.site{border-top:1px solid var(--line); padding:28px 0; margin-top:0;}
-  .footer-inner{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; color:var(--ink-soft); font-size:0.84rem;}
+  footer.site{border-top:1px solid var(--line); padding:44px 0 36px; margin-top:40px;}
+  .footer-inner{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px; color:var(--ink-soft); font-size:0.84rem;}
+  .footer-brand{display:flex; align-items:center; gap:10px; color:var(--ink); font-weight:700; font-family:'Comfortaa','Manrope',system-ui,sans-serif;}
+  .footer-mark{width:28px; height:28px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 1px var(--line);}
+  .footer-nav{display:flex; gap:26px; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em;}
+  .footer-nav a{text-decoration:none; color:var(--ink-soft); cursor:pointer;}
+  .footer-nav a:hover{color:var(--ink);}
+  .footer-meta{display:flex; flex-direction:column; align-items:flex-end; gap:2px; font-size:0.78rem; text-align:right;}
+  .footer-copy{color:color-mix(in srgb, var(--ink-soft) 70%, transparent); font-size:0.72rem;}
+  @media (max-width:640px){ .footer-inner{justify-content:center; text-align:center;} .footer-meta{align-items:center; text-align:center;} }
 
   .savebar{position:sticky; bottom:0; z-index:9; display:none; justify-content:center; padding:14px; background:linear-gradient(to top, var(--bg) 60%, transparent);}
   .savebar.show{display:flex;}
@@ -399,14 +408,20 @@
         '<rect x="132" y="26" width="34" height="104" rx="3" fill="rgba(255,255,255,0.55)"/>'+
       '</svg></div></div></section>'+
       '<section id="catalogue" class="catalog">'+
-        '<h2>Catalogue</h2><p class="sub">'+STATE.items.length+' pièces en ligne · nouveaux arrivages chaque semaine</p>'+
+        '<div class="section-head"><div><h2>Catalogue</h2><p class="sub">'+STATE.items.length+' pièces en ligne · nouveaux arrivages chaque semaine</p></div></div>'+
         '<div class="filters">'+chips+'</div>'+
         '<div class="grid">'+cards+'</div>'+
       '</section>'+
       '<section class="seller" id="vendre">'+(ui.auth.session ? sellerHTML() : '<p style="text-align:center; color:var(--ink-soft); padding:24px 0;">Connecte-toi via le bouton en haut à droite pour accéder à cet espace.</p>')+'</section>')+
     '</main>'+
     '<footer class="site"><div class="wrap footer-inner">'+
-      '<span>© 2026 Petit Coin Manga — ébauche de site, à affiner ensemble.</span><span>contact@petitcoinmanga.fr</span>'+
+      '<div class="footer-brand"><img class="footer-mark" src="'+LOGO_SRC+'" alt="">Petit Coin Manga</div>'+
+      '<nav class="footer-nav">'+
+        '<a href="#catalogue" data-view="boutique">Catalogue</a>'+
+        '<a href="#vendre" data-view="boutique">Vendre un manga</a>'+
+        '<a data-view="contact">Contact</a>'+
+      '</nav>'+
+      '<div class="footer-meta"><span>contact@petitcoinmanga.fr</span><span class="footer-copy">© 2026 Petit Coin Manga</span></div>'+
     '</div></footer>'+
     '<div class="savebar'+(ui.editMode?' show':'')+'"><div class="savebar-inner">'+
       '<span class="savebar-status" id="save-status">'+(ui.status||(ui.dirty?'Modifications non enregistrées':'Aucune modification'))+'</span>'+
@@ -446,7 +461,7 @@
       });
     });
 
-    root.querySelectorAll('.site-nav [data-view]').forEach(function(link){
+    root.querySelectorAll('[data-view]').forEach(function(link){
       link.addEventListener('click', function(ev){
         var view = link.getAttribute('data-view');
         if (view === 'contact') {
