@@ -201,8 +201,9 @@
 
   function sellerHTML(){
     var f = STATE.fiche;
-    var achat = money(f.achat), vente = money(f.vente);
+    var achat = money(f.achat), vente = money(f.vente), origine = money(f.origine);
     var marge = (achat !== null && vente !== null) ? (vente - achat).toFixed(2).replace('.', ',') + ' €' : '—';
+    var remise = (origine !== null && vente !== null && origine > 0) ? Math.round((1 - vente / origine) * 100) + ' %' : '—';
     return ''+
       '<div class="seller-box">'+
         '<div>'+
@@ -215,6 +216,7 @@
             '<li><span>Prix d\'origine</span><span'+ce(ui.editMode)+' data-fiche="origine">'+esc(f.origine)+'</span></li>'+
             '<li><span>Prix d\'achat (privé)</span><span'+ce(ui.editMode)+' data-fiche="achat">'+esc(f.achat)+'</span></li>'+
             '<li><span>Prix de vente</span><span'+ce(ui.editMode)+' data-fiche="vente">'+esc(f.vente)+'</span></li>'+
+            '<li><span>% de réduction</span><span id="remise-val">'+remise+'</span></li>'+
             '<li class="margin-line"><span>Marge estimée</span><span id="marge-val">'+marge+'</span></li>'+
           '</ul>'+
         '</div>'+
@@ -571,6 +573,13 @@
           if (mv) {
             var achat = money(STATE.fiche.achat), vente = money(STATE.fiche.vente);
             mv.textContent = (achat !== null && vente !== null) ? (vente - achat).toFixed(2).replace('.', ',') + ' €' : '—';
+          }
+        }
+        if (f === 'origine' || f === 'vente') {
+          var rv = document.getElementById('remise-val');
+          if (rv) {
+            var origine = money(STATE.fiche.origine), vente2 = money(STATE.fiche.vente);
+            rv.textContent = (origine !== null && vente2 !== null && origine > 0) ? Math.round((1 - vente2 / origine) * 100) + ' %' : '—';
           }
         }
       });
