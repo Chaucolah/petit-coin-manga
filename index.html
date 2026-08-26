@@ -362,6 +362,7 @@
         '<div class="cart-pill">🛍️ Panier · 0</div>'+
       '</div>'+
     '</div></header>'+
+    (!ui.auth.session ? '<div class="wrap" style="padding-top:24px;">'+authGateHTML()+'</div>' : '')+
     '<main class="wrap">'+
     (ui.view === 'contact' ? contactHTML().replace('wrap contact-page', 'contact-page') : ''+
       '<section class="hero"><div class="hero-inner"><div>'+
@@ -380,7 +381,7 @@
         '<div class="filters">'+chips+'</div>'+
         '<div class="grid">'+cards+'</div>'+
       '</section>'+
-      '<section class="seller" id="vendre">'+(ui.auth.session ? sellerHTML() : authGateHTML())+'</section>')+
+      '<section class="seller" id="vendre">'+(ui.auth.session ? sellerHTML() : '<p style="text-align:center; color:var(--ink-soft); padding:24px 0;">Connecte-toi en haut de page pour accéder à cet espace.</p>')+'</section>')+
     '</main>'+
     '<footer class="site"><div class="wrap footer-inner">'+
       '<span>© 2026 Petit Coin Manga — ébauche de site, à affiner ensemble.</span><span>contact@petitcoinmanga.fr</span>'+
