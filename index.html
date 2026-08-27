@@ -77,8 +77,9 @@
   .hero-art svg{position:absolute; inset:0; width:100%; height:100%;}
   .top-banner{position:relative; width:100%; aspect-ratio:1563/625; max-height:340px; border-radius:20px; overflow:hidden; margin:20px 0 8px; box-shadow:var(--shadow);}
   .top-banner img.banner-photo{width:100%; height:100%; object-fit:cover; object-position:70% 35%; display:block;}
-  .banner-nav{position:absolute; top:0; left:0; right:0; display:flex; align-items:center; justify-content:space-between; padding:16px 24px; z-index:2;}
+  .banner-nav{position:absolute; top:0; left:0; right:0; display:flex; align-items:center; justify-content:flex-start; padding:16px 24px; z-index:2;}
   .banner-nav .brand{text-shadow:0 1px 4px rgba(255,255,255,0.9), 0 1px 12px rgba(255,255,255,0.6);}
+  .banner-actions-row{display:flex; justify-content:flex-end; padding:12px 0 4px;}
   .banner-title{position:absolute; left:28px; right:46%; bottom:26px; z-index:2;}
   .banner-title h1{font-size:clamp(1.5rem, 3.2vw, 2.5rem); font-weight:900; line-height:1.1; margin:0; color:#2c2a22; text-shadow:0 1px 3px rgba(255,255,255,0.7), 0 2px 16px rgba(255,255,255,0.55);}
   @media (max-width:640px){
@@ -534,10 +535,11 @@
         '<img class="banner-photo" src="'+HERO_BANNER_SRC+'" alt="Bannière Petit Coin Manga">'+
         '<div class="banner-nav">'+
           '<div class="brand"><img class="brand-mark" src="'+LOGO_SRC+'" alt="Mascotte Petit Coin Manga">Petit Coin Manga</div>'+
-          '<div class="header-actions">'+navActionsHTML+'</div>'+
         '</div>'+
         '<div class="banner-title"><h1>Des mangas et objets geek qui méritent une nouvelle étagère.</h1></div>'+
-      '</div></div>'
+      '</div>'+
+      '<div class="banner-actions-row"><div class="header-actions">'+navActionsHTML+'</div></div>'+
+      '</div>'
     :
       '<header class="site"><div class="site-inner">'+
         '<div class="brand"><img class="brand-mark" src="'+LOGO_SRC+'" alt="Mascotte Petit Coin Manga">Petit Coin Manga</div>'+
