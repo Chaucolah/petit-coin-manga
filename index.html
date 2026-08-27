@@ -283,9 +283,15 @@
         settingsBusy = false;
         settingsStatus = 'Enregistré ✓, visible par tous tes visiteurs.';
         render();
-      }).catch(function(){
+      }).catch(function(code){
         settingsBusy = false;
-        settingsStatus = 'Échec de l\'enregistrement (droits refusés ou réseau), réessaie.';
+        if (code === 401 || code === 403) {
+          clearSession();
+          ui.auth.session = null;
+          settingsStatus = 'Ta session a expiré, reconnecte-toi puis réessaie d\'enregistrer.';
+        } else {
+          settingsStatus = 'Échec de l\'enregistrement (réseau), réessaie.';
+        }
         render();
       });
   }
@@ -577,7 +583,9 @@
 
   function parametresHTML(){
     if (!ui.auth.session) {
-      return '<div class="wrap parametres-page"><p style="text-align:center; color:var(--ink-soft); padding:60px 0;">Connecte-toi via le bouton en haut à droite pour accéder aux paramètres.</p></div>';
+      return '<div class="wrap parametres-page"><p style="text-align:center; color:var(--ink-soft); padding:60px 0 8px;">Connecte-toi via le bouton en haut à droite pour accéder aux paramètres.</p>'+
+        (settingsStatus ? '<p class="form-status err" style="text-align:center;">'+esc(settingsStatus)+'</p>' : '')+
+      '</div>';
     }
     if (!settingsDraft) settingsDraft = JSON.parse(JSON.stringify(SETTINGS));
     var t = settingsDraft.texts, cat = settingsDraft.categories;
