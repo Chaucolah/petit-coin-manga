@@ -14,7 +14,7 @@
     --radius: 14px;
     --body-bg:#faf5ff;
     --body-grad-layer: linear-gradient(150deg, var(--grad1) 0%, var(--grad2) 20%, var(--grad3) 50%, #ecdff5 75%, #faf5ff 100%);
-    --body-pattern-layer: radial-gradient(circle at center, transparent 0, transparent 3px, rgba(255,255,255,0.55) 3.4px, rgba(255,255,255,0.55) 100%);
+    --body-pattern-layer: none;
     --footer-bg: transparent;
   }
   /* Le site reste toujours en thème clair, meme si l'appareil est en mode sombre */
@@ -247,7 +247,7 @@
   var STATE = JSON.parse(document.getElementById('state-data').textContent);
   var OWNER_EMAIL = 'marie-lam-21@hotmail.fr';
   var DEFAULT_SETTINGS = {
-    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', pattern:true },
+    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', pattern:false },
     texts: { brand:'Petit Coin Manga', heroTitle:'Des mangas et objets geek qui méritent une nouvelle étagère.', contactEmail:'contact@petitcoinmanga.fr', footerCopy:'© 2026 Petit Coin Manga' },
     categories: { shonen:'Shônen', seinen:'Seinen', goodies:'Goodies', promo:'En promo' }
   };
@@ -807,10 +807,6 @@
         '<span>🎨 Fond du site</span>'+
       '</label>'+
       '<label style="display:inline-flex; align-items:center; gap:8px; background:#ffffff; border:1px solid var(--line); border-radius:10px; padding:8px 14px; box-shadow:var(--shadow); cursor:pointer; font-size:0.85rem;">'+
-        '<input type="checkbox" id="pattern-toggle"'+(settingsDraft.colors.pattern!==false?' checked':'')+'>'+
-        '<span>Motif à pois</span>'+
-      '</label>'+
-      '<label style="display:inline-flex; align-items:center; gap:8px; background:#ffffff; border:1px solid var(--line); border-radius:10px; padding:8px 14px; box-shadow:var(--shadow); cursor:pointer; font-size:0.85rem;">'+
         '<input type="color" data-color-key="footerBg" value="'+esc(settingsDraft.colors.footerBg || '#ffffff')+'">'+
         '<span>🎨 Fond du pied de page</span>'+
       '</label>'+
@@ -1108,11 +1104,6 @@
         markSettingsDirty();
       });
       inp.addEventListener('change', function(){ render(); });
-    });
-    var patternToggle = document.getElementById('pattern-toggle');
-    if (patternToggle) patternToggle.addEventListener('change', function(){
-      settingsDraft.colors.pattern = patternToggle.checked;
-      markSettingsDirty();
     });
     var bgResetBtn = document.getElementById('bg-reset-btn');
     if (bgResetBtn) bgResetBtn.addEventListener('click', function(){
