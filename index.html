@@ -102,6 +102,9 @@
   .add-btn:disabled{opacity:0.5; cursor:default;}
   .add-btn:disabled:hover{background:transparent; border-color:var(--line); color:var(--ink);}
   .add-btn.in-cart{background:var(--sage); border-color:var(--sage); color:#fff;}
+  .edit-item-btn{border:1px solid var(--line); background:transparent; border-radius:999px; padding:6px 13px; font-size:0.78rem; font-weight:700; color:var(--ink); cursor:pointer;}
+  .edit-item-btn:hover{border-color:var(--sage); color:var(--sage-ink);}
+  .edit-item-btn.active{background:var(--sage); border-color:var(--sage); color:#fff;}
   .cart-list{list-style:none; margin:0 0 20px; padding:0; display:flex; flex-direction:column; gap:12px;}
   .cart-line{display:flex; align-items:center; gap:14px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:10px 14px;}
   .cart-line-img{width:52px; height:66px; flex:none; border-radius:8px; background-size:cover; background-position:center; background-color:var(--surface-2);}
@@ -210,7 +213,7 @@
     return isNaN(n) ? null : n;
   }
 
-  function cardHTML(it, i){
+  function cardHTML(it, i, forSeller){
     var coverInner = it.img
       ? '<img src="'+it.img+'" alt="'+esc(it.t)+'" style="width:100%;height:100%;object-fit:cover;">'
       : '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3V4Z"/><path d="M18 20a3 3 0 0 0 0-6"/></svg>'+
@@ -229,7 +232,13 @@
             '<span class="price-old"'+ce(ui.editMode)+' data-idx="'+i+'" data-field="old">'+esc(it.old)+'</span>'+
             '<span class="price-new"'+ce(ui.editMode)+' data-idx="'+i+'" data-field="now">'+esc(it.now)+'</span>'+
           '</div>'+
-          '<div class="add-row"><span style="font-size:0.75rem; color:var(--ink-soft);">'+(it.sold?'Vendu':'Stock: 1')+'</span><button class="add-btn'+(ui.cart.indexOf(i)!==-1?' in-cart':'')+'" type="button" data-idx="'+i+'"'+(it.sold?' disabled':'')+'>'+(it.sold?'Vendu':(ui.cart.indexOf(i)!==-1?'✓ Ajouté':'Ajouter'))+'</button></div>'+
+          '<div class="add-row"><span style="font-size:0.75rem; color:var(--ink-soft);">'+(it.sold?'Vendu':'Stock: 1')+'</span>'+
+            (forSeller ?
+              '<button class="edit-item-btn'+(ui.editMode?' active':'')+'" type="button" data-idx="'+i+'">'+(ui.editMode?'✓ Terminé':'✏️ Éditer')+'</button>'
+            :
+              '<button class="add-btn'+(ui.cart.indexOf(i)!==-1?' in-cart':'')+'" type="button" data-idx="'+i+'"'+(it.sold?' disabled':'')+'>'+(it.sold?'Vendu':(ui.cart.indexOf(i)!==-1?'✓ Ajouté':'Ajouter'))+'</button>'
+            )+
+          '</div>'+
         '</div>'+
         (ui.editMode ? '<div class="card-actions">'+
           '<button class="sold-toggle-btn'+(it.sold?' active':'')+'" type="button" data-sold-idx="'+i+'">'+(it.sold?'↺ Remettre en vente':'✓ Marquer vendu')+'</button>'+
@@ -298,7 +307,7 @@
   function authHeaderHTML(){
     if (ui.auth.session) {
       return '<div style="position:relative;">'+
-        '<button class="edit-toggle" type="button" id="auth-btn">✓ Connectée</button>'+
+        '<button class="edit-toggle" type="button" id="auth-btn">✓ Connecté(e)</button>'+
         (ui.auth.open ? authDropdownLoggedInHTML() : '')+
       '</div>';
     }
@@ -330,7 +339,7 @@
 
   function authDropdownLoggedInHTML(){
     return '<div class="auth-dropdown" style="width:220px;">'+
-      '<p style="margin:0 0 14px; font-size:0.85rem;">Connectée en tant que propriétaire.</p>'+
+      '<p style="margin:0 0 14px; font-size:0.85rem;">Connecté(e) en tant que propriétaire.</p>'+
       '<button class="btn btn-ghost" type="button" id="logout-btn" style="width:100%; justify-content:center; padding:8px 14px; font-size:0.82rem;">Se déconnecter</button>'+
     '</div>';
   }
@@ -416,7 +425,7 @@
     var itemsHTML = ''+
       '<div style="margin-top:24px;">'+
         '<div class="section-head"><div><h2 style="font-size:1.1rem;">Tes fiches en ligne</h2><p style="color:var(--ink-soft); font-size:0.9rem; margin:4px 0 20px;">'+STATE.items.length+' fiche'+(STATE.items.length>1?'s':'')+', visibles côté boutique'+(ui.editMode?' · clique une fiche pour la modifier':'')+'</p></div></div>'+
-        '<div class="grid">'+STATE.items.map(function(it, i){ return cardHTML(it, i); }).join('')+'<button type="button" class="add-card" id="add-fiche-card"><span class="plus">+</span><span class="label">Ajouter un manga</span></button>'+'</div>'+
+        '<div class="grid">'+STATE.items.map(function(it, i){ return cardHTML(it, i, true); }).join('')+'<button type="button" class="add-card" id="add-fiche-card"><span class="plus">+</span><span class="label">Ajouter un manga</span></button>'+'</div>'+
       '</div>';
     return ''+
     '<div class="wrap vendre-page">'+
@@ -498,7 +507,6 @@
     '<header class="site"><div class="site-inner">'+
       '<div class="brand"><img class="brand-mark" src="'+LOGO_SRC+'" alt="Mascotte Petit Coin Manga">Petit Coin Manga</div>'+
       '<div class="header-actions">'+
-        (ui.auth.session && ui.view === 'vendre' ? '<button class="edit-toggle'+(ui.editMode?' active':'')+'" type="button" id="edit-toggle">'+(ui.editMode?'✓ Édition en cours':'✏️ Éditer')+'</button>' : '')+
         authHeaderHTML()+
         '<a data-view="contact" class="header-contact-link'+(ui.view==='contact'?' active':'')+'">Contact</a>'+
         '<button class="cart-pill" type="button" id="cart-pill-btn">🛍️ Panier · '+ui.cart.length+'</button>'+
@@ -565,10 +573,11 @@
   }
 
   function wire(){
-    var editBtn = document.getElementById('edit-toggle');
-    if (editBtn) editBtn.addEventListener('click', function(){
-      ui.editMode = !ui.editMode;
-      render();
+    root.querySelectorAll('.edit-item-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        ui.editMode = !ui.editMode;
+        render();
+      });
     });
 
     var authBtn = document.getElementById('auth-btn');
