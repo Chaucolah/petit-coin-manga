@@ -123,13 +123,18 @@
   .card-body{padding:14px 16px 16px; display:flex; flex-direction:column; gap:8px; flex:1;}
   .card-body h3{font-size:0.98rem; margin:0; font-family:'Manrope'; font-weight:700;}
   .card-title-row{display:flex; align-items:center; gap:6px;}
-  .title-edit-btn{border:none; background:transparent; cursor:pointer; font-size:0.85rem; opacity:0.55; padding:2px; line-height:1;}
-  .title-edit-btn:hover{opacity:1;}
+  .desc-row{display:flex; align-items:flex-start; gap:6px;}
+  .field-edit-btn{border:none; background:transparent; cursor:pointer; opacity:0.5; padding:2px; line-height:1; color:var(--ink-soft); flex:none;}
+  .field-edit-btn svg{width:14px; height:14px; display:block;}
+  .field-edit-btn:hover{opacity:1; color:var(--sage-ink);}
+  [contenteditable="true"][data-idx][data-field]{outline:1.5px dashed color-mix(in srgb, var(--sage) 50%, transparent); outline-offset:3px; border-radius:5px; cursor:text;}
+  [contenteditable="true"][data-idx][data-field]:hover{outline-color:var(--sage);}
+  [contenteditable="true"][data-idx][data-field]:focus{outline-style:solid; background:color-mix(in srgb, var(--sage) 8%, transparent);}
   .cover-photo-btn{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:46px; height:46px; border-radius:50%; background:rgba(20,18,16,0.6); color:#fff; border:2px solid rgba(255,255,255,0.85); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:3; padding:0;}
   .cover-photo-btn:hover{background:rgba(20,18,16,0.8);}
   .cover-photo-btn svg{width:20px; height:20px;}
   .card-body .desc{font-size:0.83rem; color:var(--ink-soft); margin:0;}
-  .price-row{margin-top:auto; display:flex; align-items:baseline; gap:8px; font-variant-numeric:tabular-nums;}
+  .price-row{margin-top:auto; display:flex; align-items:center; gap:6px; font-variant-numeric:tabular-nums;}
   .price-old{color:var(--ink-soft); text-decoration:line-through; font-size:0.84rem;}
   .price-new{color:var(--gold); font-weight:800; font-size:1.15rem;}
   .add-row{display:flex; justify-content:space-between; align-items:center; margin-top:2px;}
@@ -348,13 +353,17 @@
     return isNaN(n) ? null : n;
   }
 
+  function pencilIconSVG(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5 19 9l-9.5 9.5-5 1 1-5 9-9Z"/><path d="M13 6l4.5 4.5"/></svg>';
+  }
+
   function cardHTML(it, i, forSeller, forSettings){
     var coverInner = it.img
       ? '<img src="'+it.img+'" alt="'+esc(it.t)+'" style="width:100%;height:100%;object-fit:cover;">'
       : '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3V4Z"/><path d="M18 20a3 3 0 0 0 0-6"/></svg>'+
         '<span class="photo-note">photo à venir</span>';
     return ''+
-      '<div class="card" data-card-idx="'+i+'">'+
+      '<div class="card" data-card-idx="'+i+'" style="border:2px solid '+it.hue+';">'+
         '<div class="cover'+(it.sold?' is-sold':'')+'" style="background:linear-gradient(160deg,'+it.hue+', color-mix(in srgb, '+it.hue+' 60%, var(--ink) 15%))">'+
           '<span class="badge">'+esc(it.tag)+'</span>'+
           coverInner+
@@ -365,14 +374,18 @@
           '<input type="file" accept="image/*" class="cover-photo-input" data-photo-input-idx="'+i+'" style="display:none;">'
           : '')+
         '</div>'+
-        '<div class="card-body">'+
+        '<div class="card-body" style="background:color-mix(in srgb, '+it.hue+' 12%, var(--surface) 88%);">'+
           '<h3 class="card-title-row">'+
             '<span'+ce(ui.editMode)+' data-idx="'+i+'" data-field="t">'+esc(it.t)+'</span>'+
-            (forSettings && ui.editMode ? '<button type="button" class="title-edit-btn" data-focus-idx="'+i+'" title="Modifier le titre" aria-label="Modifier le titre">✏️</button>' : '')+
+            (forSettings && ui.editMode ? '<button type="button" class="field-edit-btn" data-focus-idx="'+i+'" data-focus-field="t" title="Modifier le titre" aria-label="Modifier le titre">'+pencilIconSVG()+'</button>' : '')+
           '</h3>'+
-          '<p class="desc"'+ce(ui.editMode)+' data-idx="'+i+'" data-field="d">'+esc(it.d)+'</p>'+
+          '<div class="desc-row">'+
+            '<p class="desc"'+ce(ui.editMode)+' data-idx="'+i+'" data-field="d">'+esc(it.d)+'</p>'+
+            (forSettings && ui.editMode ? '<button type="button" class="field-edit-btn" data-focus-idx="'+i+'" data-focus-field="d" title="Modifier la description" aria-label="Modifier la description">'+pencilIconSVG()+'</button>' : '')+
+          '</div>'+
           '<div class="price-row">'+
             '<span class="price-old"'+ce(ui.editMode)+' data-idx="'+i+'" data-field="old">'+esc(it.old)+'</span>'+
+            (forSettings && ui.editMode ? '<button type="button" class="field-edit-btn" data-focus-idx="'+i+'" data-focus-field="old" title="Modifier le prix d\'origine" aria-label="Modifier le prix d\'origine">'+pencilIconSVG()+'</button>' : '')+
             '<span class="price-new"'+ce(ui.editMode)+' data-idx="'+i+'" data-field="now">'+esc(it.now)+'</span>'+
           '</div>'+
           '<div class="add-row"><span style="font-size:0.75rem; color:var(--ink-soft);">'+(it.sold?'Vendu':'Stock: 1')+'</span>'+
@@ -890,8 +903,9 @@
     root.querySelectorAll('[data-focus-idx]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var i = btn.getAttribute('data-focus-idx');
-        var titleEl = root.querySelector('.card[data-card-idx="'+i+'"] [data-field="t"]');
-        if (titleEl) titleEl.focus();
+        var field = btn.getAttribute('data-focus-field') || 't';
+        var targetEl = root.querySelector('.card[data-card-idx="'+i+'"] [data-field="'+field+'"]');
+        if (targetEl) targetEl.focus();
       });
     });
 
