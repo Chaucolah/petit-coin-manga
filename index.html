@@ -109,6 +109,10 @@
   .card-actions .delete-item-btn{flex:none; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:999px; cursor:pointer; border:1px solid #e3c3bd; background:transparent; color:#a8493f; padding:0;}
   .card-actions .delete-item-btn svg{width:16px; height:16px;}
   .card-actions .delete-item-btn:hover{background:#fbebe8;}
+  .add-card{border:2px dashed var(--line); border-radius:var(--radius); background:transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-height:280px; width:100%; color:var(--ink-soft); font-family:inherit; cursor:pointer; transition:border-color .15s, color .15s, background .15s;}
+  .add-card:hover{border-color:var(--sage); color:var(--sage-ink); background:var(--surface-2);}
+  .add-card .plus{font-size:2.6rem; font-weight:300; line-height:1;}
+  .add-card .label{font-size:0.85rem; font-weight:700;}
 
   [contenteditable="true"].fiche-field{display:inline-block; min-width:60px; border:1px solid var(--line); border-radius:8px; padding:4px 10px; background:var(--surface); cursor:text;}
   [contenteditable="true"].fiche-field:hover{border-color:var(--sage);}
@@ -387,7 +391,7 @@
     var itemsHTML = ''+
       '<div style="margin-top:36px;">'+
         '<div class="section-head"><div><h2 style="font-size:1.1rem;">Tes fiches en ligne</h2><p style="color:var(--ink-soft); font-size:0.9rem; margin:4px 0 20px;">'+STATE.items.length+' fiche'+(STATE.items.length>1?'s':'')+', visibles côté boutique'+(ui.editMode?' · clique une fiche pour la modifier':'')+'</p></div></div>'+
-        '<div class="grid">'+STATE.items.map(function(it, i){ return cardHTML(it, i); }).join('')+'</div>'+
+        '<div class="grid">'+STATE.items.map(function(it, i){ return cardHTML(it, i); }).join('')+'<button type="button" class="add-card" id="add-fiche-card"><span class="plus">+</span><span class="label">Ajouter un manga</span></button>'+'</div>'+
       '</div>';
     return ''+
     '<div class="wrap vendre-page">'+
@@ -665,6 +669,16 @@
       ui.view = 'boutique';
       render();
       window.scrollTo({top:0, behavior:'auto'});
+    });
+    var addFicheCard = document.getElementById('add-fiche-card');
+    if (addFicheCard) addFicheCard.addEventListener('click', function(){
+      ui.editMode = true;
+      render();
+      var titreEl = document.querySelector('[data-fiche="titre"]');
+      if (titreEl) {
+        titreEl.scrollIntoView({behavior:'smooth', block:'center'});
+        titreEl.focus();
+      }
     });
     var addProductBtn = document.getElementById('add-product-btn');
     if (addProductBtn) addProductBtn.addEventListener('click', function(){
