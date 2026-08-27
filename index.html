@@ -348,7 +348,7 @@
     return isNaN(n) ? null : n;
   }
 
-  function cardHTML(it, i, forSeller){
+  function cardHTML(it, i, forSeller, forSettings){
     var coverInner = it.img
       ? '<img src="'+it.img+'" alt="'+esc(it.t)+'" style="width:100%;height:100%;object-fit:cover;">'
       : '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3V4Z"/><path d="M18 20a3 3 0 0 0 0-6"/></svg>'+
@@ -359,7 +359,7 @@
           '<span class="badge">'+esc(it.tag)+'</span>'+
           coverInner+
           (it.sold ? '<div class="sold-ribbon"><span>Vendu</span></div>' : '')+
-          (ui.editMode ? '<button type="button" class="cover-photo-btn" data-photo-idx="'+i+'" title="Changer la photo" aria-label="Changer la photo">'+
+          (forSettings && ui.editMode ? '<button type="button" class="cover-photo-btn" data-photo-idx="'+i+'" title="Changer la photo" aria-label="Changer la photo">'+
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="14" r="3.4"/></svg>'+
           '</button>'+
           '<input type="file" accept="image/*" class="cover-photo-input" data-photo-input-idx="'+i+'" style="display:none;">'
@@ -368,7 +368,7 @@
         '<div class="card-body">'+
           '<h3 class="card-title-row">'+
             '<span'+ce(ui.editMode)+' data-idx="'+i+'" data-field="t">'+esc(it.t)+'</span>'+
-            (ui.editMode ? '<button type="button" class="title-edit-btn" data-focus-idx="'+i+'" title="Modifier le titre" aria-label="Modifier le titre">✏️</button>' : '')+
+            (forSettings && ui.editMode ? '<button type="button" class="title-edit-btn" data-focus-idx="'+i+'" title="Modifier le titre" aria-label="Modifier le titre">✏️</button>' : '')+
           '</h3>'+
           '<p class="desc"'+ce(ui.editMode)+' data-idx="'+i+'" data-field="d">'+esc(it.d)+'</p>'+
           '<div class="price-row">'+
@@ -383,7 +383,7 @@
             )+
           '</div>'+
         '</div>'+
-        (ui.editMode ? '<div class="card-actions">'+
+        (forSettings && ui.editMode ? '<div class="card-actions">'+
           '<button class="color-edit-btn" type="button" data-color-edit-idx="'+i+'">🎨 Modifier sa couleur</button>'+
           (ui.colorEditIdx === i ?
             '<div class="card-color-palette">'+
@@ -636,7 +636,7 @@
     if (!settingsDraft) settingsDraft = JSON.parse(JSON.stringify(SETTINGS));
     var cat = settingsDraft.categories;
     var bgImg = settingsDraft.colors.bgImage;
-    var itemsHTML = '<div class="grid">'+STATE.items.map(function(it, i){ return cardHTML(it, i, true); }).join('')+'<button type="button" class="add-card" id="add-fiche-card"><span class="plus">+</span><span class="label">Ajouter un manga</span></button>'+'</div>';
+    var itemsHTML = '<div class="grid">'+STATE.items.map(function(it, i){ return cardHTML(it, i, true, true); }).join('')+'<button type="button" class="add-card" id="add-fiche-card"><span class="plus">+</span><span class="label">Ajouter un manga</span></button>'+'</div>';
     return ''+
     '<div class="wrap parametres-page">'+
       '<div class="settings-toolbar">'+
