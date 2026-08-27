@@ -113,6 +113,8 @@
   .chip{border:1px solid var(--line); background:var(--surface); border-radius:999px; padding:9px 16px; font-size:0.86rem; font-weight:600; cursor:pointer; color:var(--ink-soft); transition:all .15s ease;}
   .chip:hover{color:var(--ink); border-color:var(--ink-soft);}
   .chip.active{background:var(--ink); color:var(--bg); border-color:var(--ink);}
+  .cat-remove-btn{border:none; background:transparent; cursor:pointer; color:var(--ink-soft); font-weight:900; line-height:1; padding:0; font-size:1rem;}
+  .cat-remove-btn:hover{color:#c0392b;}
 
   section.catalog{padding:8px 0 64px;}
   .catalog h2{font-size:2rem; margin:0 0 4px; font-weight:800; text-transform:uppercase; letter-spacing:-0.01em;}
@@ -248,7 +250,7 @@
   var DEFAULT_SETTINGS = {
     colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false },
     texts: { brand:'Petit Coin Manga', heroTitle:'Des mangas et objets geek qui méritent une nouvelle étagère.', contactEmail:'contact@petitcoinmanga.fr', footerCopy:'© 2026 Petit Coin Manga' },
-    categories: { shonen:'Shônen', seinen:'Seinen', goodies:'Goodies', promo:'En promo' }
+    categories: [{key:'shonen', label:'Shônen'}, {key:'seinen', label:'Seinen'}, {key:'goodies', label:'Goodies'}, {key:'promo', label:'En promo'}]
   };
   var SETTINGS = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
   var settingsDraft = null;
@@ -293,6 +295,16 @@
     }
   }
 
+  function normalizeCategories(cats){
+    if (Array.isArray(cats) && cats.length) {
+      return cats.filter(function(c){ return c && c.key; }).map(function(c){ return { key: c.key, label: c.label || c.key }; });
+    }
+    if (cats && typeof cats === 'object' && Object.keys(cats).length) {
+      return Object.keys(cats).map(function(k){ return { key: k, label: cats[k] }; });
+    }
+    return JSON.parse(JSON.stringify(DEFAULT_SETTINGS.categories));
+  }
+
   function fetchSiteSettings(){
     fetch(SUPABASE_URL + '/rest/v1/site_settings?id=eq.1&select=colors,texts,categories', {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
@@ -302,7 +314,7 @@
       SETTINGS = {
         colors: Object.assign({}, DEFAULT_SETTINGS.colors, row.colors || {}),
         texts: Object.assign({}, DEFAULT_SETTINGS.texts, row.texts || {}),
-        categories: Object.assign({}, DEFAULT_SETTINGS.categories, row.categories || {})
+        categories: normalizeCategories(row.categories)
       };
       applySettingsTheme();
       render();
@@ -325,7 +337,7 @@
       .then(function(rows){
         var row = rows && rows[0];
         if (row) {
-          SETTINGS = { colors: Object.assign({}, DEFAULT_SETTINGS.colors, row.colors||{}), texts: Object.assign({}, DEFAULT_SETTINGS.texts, row.texts||{}), categories: Object.assign({}, DEFAULT_SETTINGS.categories, row.categories||{}) };
+          SETTINGS = { colors: Object.assign({}, DEFAULT_SETTINGS.colors, row.colors||{}), texts: Object.assign({}, DEFAULT_SETTINGS.texts, row.texts||{}), categories: normalizeCategories(row.categories) };
         }
         settingsDraft = JSON.parse(JSON.stringify(SETTINGS));
         applySettingsTheme();
@@ -394,10 +406,10 @@
   }
 
   function categoryBadge(it){
-    var keys = ['shonen', 'seinen', 'goodies', 'promo'];
     var tokens = (it.cat || '').split(/\s+/);
-    for (var k = 0; k < keys.length; k++){
-      if (tokens.indexOf(keys[k]) !== -1) return SETTINGS.categories[keys[k]];
+    var cats = SETTINGS.categories || [];
+    for (var k = 0; k < cats.length; k++){
+      if (tokens.indexOf(cats[k].key) !== -1) return cats[k].label;
     }
     return '';
   }
@@ -698,7 +710,8 @@
       '</div>';
     }
     if (!settingsDraft) settingsDraft = JSON.parse(JSON.stringify(SETTINGS));
-    var cat = settingsDraft.categories;
+    if (!Array.isArray(settingsDraft.categories)) settingsDraft.categories = normalizeCategories(settingsDraft.categories);
+    var catsDraft = settingsDraft.categories;
     var bgImg = settingsDraft.colors.bgImage;
     var itemsHTML = '<div class="grid">'+STATE.items.map(function(it, i){ return cardHTML(it, i, true, true); }).join('')+'<button type="button" class="add-card" id="add-fiche-card"><span class="plus">+</span><span class="label">Ajouter un manga</span></button>'+'</div>';
     return ''+
@@ -713,13 +726,16 @@
       '</div>'+
       '<div class="settings-card">'+
         '<h3 style="margin:0 0 6px; font-size:1rem;">Onglets du catalogue</h3>'+
-        '<p style="margin:0 0 14px; font-size:0.8rem; color:var(--ink-soft);">Clique sur un onglet pour le renommer. "Tout" reste fixe.</p>'+
+        '<p style="margin:0 0 14px; font-size:0.8rem; color:var(--ink-soft);">Clique sur un onglet pour le renommer, sur la croix pour le supprimer, ou ajoute-en un nouveau. "Tout" reste fixe.</p>'+
         '<div class="filters">'+
           '<span class="chip active" style="cursor:default;">Tout</span>'+
-          '<span class="chip"'+ce(true)+' data-settings-field="categories.shonen" data-placeholder="Shônen">'+esc(cat.shonen)+'</span>'+
-          '<span class="chip"'+ce(true)+' data-settings-field="categories.seinen" data-placeholder="Seinen">'+esc(cat.seinen)+'</span>'+
-          '<span class="chip"'+ce(true)+' data-settings-field="categories.goodies" data-placeholder="Goodies">'+esc(cat.goodies)+'</span>'+
-          '<span class="chip"'+ce(true)+' data-settings-field="categories.promo" data-placeholder="En promo">'+esc(cat.promo)+'</span>'+
+          catsDraft.map(function(c, ci){
+            return '<span class="chip" style="display:inline-flex; align-items:center; gap:6px; padding-right:8px;">'+
+              '<span'+ce(true)+' data-settings-field="categories.'+ci+'.label" data-placeholder="Nom">'+esc(c.label)+'</span>'+
+              '<button type="button" class="cat-remove-btn" data-cat-remove-idx="'+ci+'" title="Supprimer cet onglet" aria-label="Supprimer cet onglet">×</button>'+
+            '</span>';
+          }).join('')+
+          '<button type="button" id="cat-add-btn" class="chip" style="cursor:pointer; border-style:dashed; background:transparent;">+ Ajouter un onglet</button>'+
         '</div>'+
       '</div>'+
       '<div style="margin-top:24px;">'+
@@ -759,11 +775,8 @@
   }
 
   function render(){
-    var chips = [
-      {k:'all', l:'Tout'}, {k:'shonen', l:SETTINGS.categories.shonen}, {k:'seinen', l:SETTINGS.categories.seinen},
-      {k:'goodies', l:SETTINGS.categories.goodies}, {k:'promo', l:SETTINGS.categories.promo}
-    ].map(function(c){
-      return '<button class="chip'+(ui.filter===c.k?' active':'')+'" type="button" data-filter="'+c.k+'">'+c.l+'</button>';
+    var chips = [{k:'all', l:'Tout'}].concat((SETTINGS.categories || []).map(function(c){ return {k:c.key, l:c.label}; })).map(function(c){
+      return '<button class="chip'+(ui.filter===c.k?' active':'')+'" type="button" data-filter="'+c.k+'">'+esc(c.l)+'</button>';
     }).join('');
 
     var cards = STATE.items.map(function(it, i){
@@ -1134,6 +1147,20 @@
         for (var k = 0; k < path.length - 1; k++) obj = obj[path[k]];
         obj[path[path.length - 1]] = el.textContent;
         markSettingsDirty();
+      });
+    });
+    var catAddBtn = document.getElementById('cat-add-btn');
+    if (catAddBtn) catAddBtn.addEventListener('click', function(){
+      settingsDraft.categories.push({ key: 'cat_' + Date.now(), label: 'Nouvel onglet' });
+      markSettingsDirty();
+      render();
+    });
+    root.querySelectorAll('[data-cat-remove-idx]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var idx = parseInt(btn.getAttribute('data-cat-remove-idx'), 10);
+        settingsDraft.categories.splice(idx, 1);
+        markSettingsDirty();
+        render();
       });
     });
     var bgImageInput = document.getElementById('bg-image-input');
