@@ -114,6 +114,9 @@
   .cart-remove-btn{border:1px solid var(--line); background:transparent; border-radius:999px; padding:6px 13px; font-size:0.78rem; font-weight:700; color:#a8493f; cursor:pointer;}
   .cart-remove-btn:hover{background:#fbebe8; border-color:#e3c3bd;}
   .cart-total{text-align:right; font-size:1.1rem; font-weight:800; color:var(--ink); padding-top:14px; border-top:1px solid var(--line);}
+  .pay-box{display:flex; flex-direction:column; align-items:flex-end; gap:8px; margin-top:18px;}
+  .pay-btn{justify-content:center; padding:12px 28px; font-size:0.95rem;}
+  .pay-note{margin:0; font-size:0.76rem; color:var(--ink-soft); text-align:right; max-width:320px;}
   .cover.is-sold img{filter:grayscale(1) brightness(0.6);}
   .sold-ribbon{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(20,18,16,0.12); padding:10px;}
   .sold-ribbon span{background:rgba(255,255,255,0.92); color:#d31d16; font-weight:900; font-size:1.9rem; line-height:1; text-transform:uppercase; letter-spacing:0.05em; padding:8px 18px; border-radius:8px; border:4px solid #d31d16; transform:rotate(-10deg); box-shadow:0 4px 14px rgba(0,0,0,0.35); text-align:center;}
@@ -437,9 +440,12 @@
     '</div>';
   }
 
+  var PAYPAL_ME = 'hahiuiah';
+
   function panierHTML(){
     var lines = ui.cart.map(function(i){ return {idx: i, it: STATE.items[i]}; }).filter(function(x){ return x.it; });
     var total = lines.reduce(function(sum, x){ var v = money(x.it.now); return sum + (v || 0); }, 0);
+    var payHref = 'https://paypal.me/'+PAYPAL_ME+'/'+total.toFixed(2)+'EUR';
     return ''+
     '<div class="wrap panier-page">'+
       '<button id="home-btn" class="btn btn-ghost" type="button" style="margin-bottom:18px; padding:7px 16px; font-size:0.82rem;">← Accueil</button>'+
@@ -457,7 +463,11 @@
             '</li>';
           }).join('')+
         '</ul>'+
-        '<div class="cart-total">Total : '+total.toFixed(2).replace('.', ',')+' €</div>'
+        '<div class="cart-total">Total : '+total.toFixed(2).replace('.', ',')+' €</div>'+
+        '<div class="pay-box">'+
+          '<a class="btn btn-primary pay-btn" href="'+payHref+'" target="_blank" rel="noopener">Payer '+total.toFixed(2).replace('.', ',')+' € avec PayPal</a>'+
+          '<p class="pay-note">Paiement sécurisé sur le site PayPal, tes coordonnées bancaires ne passent jamais par la boutique.</p>'+
+        '</div>'
       )+
     '</div>';
   }
