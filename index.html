@@ -384,12 +384,17 @@
   }
 
   function vendrePageHTML(){
+    var itemsHTML = ''+
+      '<div style="margin-top:36px;">'+
+        '<div class="section-head"><div><h2 style="font-size:1.1rem;">Tes fiches en ligne</h2><p style="color:var(--ink-soft); font-size:0.9rem; margin:4px 0 20px;">'+STATE.items.length+' fiche'+(STATE.items.length>1?'s':'')+' — visibles côté boutique'+(ui.editMode?' · clique une fiche pour la modifier':'')+'</p></div></div>'+
+        '<div class="grid">'+STATE.items.map(function(it, i){ return cardHTML(it, i); }).join('')+'</div>'+
+      '</div>';
     return ''+
     '<div class="wrap vendre-page">'+
       '<button id="home-btn" class="btn btn-ghost" type="button" style="margin-bottom:18px; padding:7px 16px; font-size:0.82rem;">← Accueil</button>'+
       '<span class="eyebrow">Je vends un manga</span>'+
       '<h1>Vendre un manga</h1>'+
-      (ui.auth.session ? sellerHTML() : '<p style="text-align:center; color:var(--ink-soft); padding:24px 0;">Connecte-toi via le bouton en haut à droite pour accéder à cet espace.</p>')+
+      (ui.auth.session ? sellerHTML() + (STATE.items.length ? itemsHTML : '') : '<p style="text-align:center; color:var(--ink-soft); padding:24px 0;">Connecte-toi via le bouton en haut à droite pour accéder à cet espace.</p>')+
     '</div>';
   }
 
