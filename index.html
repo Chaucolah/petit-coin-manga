@@ -12,10 +12,14 @@
     --grad1:#0de0c4; --grad2:#ff2996; --grad3:#d9bdf0;
     --shadow: 0 1px 2px rgba(44,42,46,0.04), 0 8px 24px rgba(44,42,46,0.06);
     --radius: 14px;
+    --body-bg:#faf5ff;
+    --body-grad-layer: linear-gradient(150deg, var(--grad1) 0%, var(--grad2) 20%, var(--grad3) 50%, #ecdff5 75%, #faf5ff 100%);
+    --body-pattern-layer: radial-gradient(circle at center, transparent 0, transparent 3px, rgba(255,255,255,0.55) 3.4px, rgba(255,255,255,0.55) 100%);
+    --footer-bg: transparent;
   }
   /* Le site reste toujours en thème clair, meme si l'appareil est en mode sombre */
   *{box-sizing:border-box;}
-  body{margin:0; background:radial-gradient(circle at center, transparent 0, transparent 3px, #faf5ff 3.4px, #faf5ff 100%) 0 0/16px 16px repeat,linear-gradient(150deg, var(--grad1) 0%, var(--grad2) 20%, var(--grad3) 50%, #ecdff5 75%, #faf5ff 100%) 0 0/100% 100% no-repeat; color:var(--ink); font-family:'Manrope', system-ui, sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased;}
+  body{margin:0; background-color:var(--body-bg); background-image:var(--body-pattern-layer), var(--body-grad-layer); background-position:0 0, 0 0; background-size:16px 16px, 100% 100%; background-repeat:repeat, no-repeat; color:var(--ink); font-family:'Manrope', system-ui, sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased;}
   h1,h2,h3,.brand{font-family:'Comfortaa','Manrope',system-ui,sans-serif; text-wrap:balance; font-weight:700; letter-spacing:-0.01em;}
   a{color:inherit;}
   .wrap{max-width:1280px; margin:0 auto; padding:0 16px;}
@@ -207,7 +211,7 @@
   .margin-line span:last-child{color:var(--sage-ink); background:color-mix(in srgb, var(--sage) 18%, transparent); padding:2px 8px; border-radius:6px;}
   .internal-tag{display:inline-block; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--gold); background:var(--gold-bg); border-radius:6px; padding:3px 8px; margin-bottom:10px;}
 
-  footer.site{border-top:1px solid var(--line); padding:44px 0 36px; margin-top:40px;}
+  footer.site{border-top:1px solid var(--line); padding:44px 0 36px; margin-top:40px; background:var(--footer-bg);}
   .footer-inner{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px; color:var(--ink-soft); font-size:0.84rem;}
   .footer-brand{display:flex; align-items:center; gap:10px; color:var(--ink); font-weight:700; font-family:'Comfortaa','Manrope',system-ui,sans-serif;}
   .footer-mark{width:28px; height:28px; border-radius:50%; object-fit:cover; box-shadow:0 0 0 1px var(--line);}
@@ -243,7 +247,7 @@
   var STATE = JSON.parse(document.getElementById('state-data').textContent);
   var OWNER_EMAIL = 'marie-lam-21@hotmail.fr';
   var DEFAULT_SETTINGS = {
-    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'' },
+    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', pattern:true },
     texts: { brand:'Petit Coin Manga', heroTitle:'Des mangas et objets geek qui méritent une nouvelle étagère.', contactEmail:'contact@petitcoinmanga.fr', footerCopy:'© 2026 Petit Coin Manga' },
     categories: { shonen:'Shônen', seinen:'Seinen', goodies:'Goodies', promo:'En promo' }
   };
@@ -262,6 +266,17 @@
     if (c.grad1) r.setProperty('--grad1', c.grad1);
     if (c.grad2) r.setProperty('--grad2', c.grad2);
     if (c.grad3) r.setProperty('--grad3', c.grad3);
+    if (c.bodyBg) {
+      r.setProperty('--body-bg', c.bodyBg);
+      r.setProperty('--body-grad-layer', 'none');
+    } else {
+      r.removeProperty('--body-bg');
+      r.removeProperty('--body-grad-layer');
+    }
+    if (c.footerBg) r.setProperty('--footer-bg', c.footerBg);
+    else r.removeProperty('--footer-bg');
+    if (c.pattern === false) r.setProperty('--body-pattern-layer', 'none');
+    else r.removeProperty('--body-pattern-layer');
     if (c.bgImage) {
       document.body.style.backgroundImage = 'url("'+c.bgImage+'")';
       document.body.style.backgroundSize = 'cover';
@@ -786,6 +801,21 @@
         '<div class="grid">'+cards+'</div>'+
       '</section>')+
     '</main>'+
+    (inSettings ? '<div class="wrap" style="display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; padding:16px 0;">'+
+      '<label style="display:inline-flex; align-items:center; gap:8px; background:#ffffff; border:1px solid var(--line); border-radius:10px; padding:8px 14px; box-shadow:var(--shadow); cursor:pointer; font-size:0.85rem;">'+
+        '<input type="color" data-color-key="bodyBg" value="'+esc(settingsDraft.colors.bodyBg || '#faf5ff')+'">'+
+        '<span>🎨 Fond du site</span>'+
+      '</label>'+
+      '<label style="display:inline-flex; align-items:center; gap:8px; background:#ffffff; border:1px solid var(--line); border-radius:10px; padding:8px 14px; box-shadow:var(--shadow); cursor:pointer; font-size:0.85rem;">'+
+        '<input type="checkbox" id="pattern-toggle"'+(settingsDraft.colors.pattern!==false?' checked':'')+'>'+
+        '<span>Motif à pois</span>'+
+      '</label>'+
+      '<label style="display:inline-flex; align-items:center; gap:8px; background:#ffffff; border:1px solid var(--line); border-radius:10px; padding:8px 14px; box-shadow:var(--shadow); cursor:pointer; font-size:0.85rem;">'+
+        '<input type="color" data-color-key="footerBg" value="'+esc(settingsDraft.colors.footerBg || '#ffffff')+'">'+
+        '<span>🎨 Fond du pied de page</span>'+
+      '</label>'+
+      (settingsDraft.colors.bodyBg || settingsDraft.colors.footerBg ? '<button type="button" id="bg-reset-btn" class="btn btn-ghost" style="background:#ffffff; padding:7px 14px; font-size:0.8rem;">Fonds par défaut</button>' : '')+
+    '</div>' : '')+
     '<footer class="site"><div class="wrap footer-inner">'+
       '<div class="footer-brand"><img class="footer-mark" src="'+LOGO_SRC+'" alt="">'+esc(brandText)+'</div>'+
       '<nav class="footer-nav">'+
@@ -1077,6 +1107,19 @@
         settingsDraft.colors[key] = inp.value;
         markSettingsDirty();
       });
+      inp.addEventListener('change', function(){ render(); });
+    });
+    var patternToggle = document.getElementById('pattern-toggle');
+    if (patternToggle) patternToggle.addEventListener('change', function(){
+      settingsDraft.colors.pattern = patternToggle.checked;
+      markSettingsDirty();
+    });
+    var bgResetBtn = document.getElementById('bg-reset-btn');
+    if (bgResetBtn) bgResetBtn.addEventListener('click', function(){
+      settingsDraft.colors.bodyBg = '';
+      settingsDraft.colors.footerBg = '';
+      markSettingsDirty();
+      render();
     });
     root.querySelectorAll('[data-settings-field]').forEach(function(el){
       el.addEventListener('input', function(){
