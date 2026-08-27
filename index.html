@@ -329,7 +329,7 @@
       });
   }
 
-  var ui = { view: 'boutique', filter: 'all', editMode: false, ficheModalOpen: false, cart: [], dirty: false, status: '', contactState: 'idle', colorEditIdx: null,
+  var ui = { view: 'boutique', filter: 'all', editingIdx: null, ficheModalOpen: false, cart: [], dirty: false, status: '', contactState: 'idle', colorEditIdx: null,
     auth: { session: null, mode: 'signup', status: '', busy: false, open: false } };
   var PRESET_HUES = ['#6e9083', '#d9bdf0', '#b1852f', '#0de0c4', '#ff2996', '#e3c3bd', '#2c2a2e', '#3d6bd9'];
   var root = document.getElementById('root');
@@ -389,7 +389,7 @@
           (!it.sold && parseInt(it.remise, 10) > 0 ? '<span class="discount-badge">-'+parseInt(it.remise, 10)+'%</span>' : '')+
           coverInner+
           (it.sold ? '<div class="sold-ribbon"><span>Vendu</span></div>' : '')+
-          (forSettings && ui.editMode ? '<button type="button" class="cover-photo-btn" data-photo-idx="'+i+'" title="Changer la photo" aria-label="Changer la photo">'+
+          (forSettings && ui.editingIdx === i ? '<button type="button" class="cover-photo-btn" data-photo-idx="'+i+'" title="Changer la photo" aria-label="Changer la photo">'+
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="14" r="3.4"/></svg>'+
           '</button>'+
           '<input type="file" accept="image/*" class="cover-photo-input" data-photo-input-idx="'+i+'" style="display:none;">'
@@ -397,28 +397,28 @@
         '</div>'+
         '<div class="card-body" style="background:color-mix(in srgb, '+it.hue+' 12%, var(--surface) 88%);">'+
           '<h3 class="card-title-row">'+
-            '<span'+ce(ui.editMode)+' data-idx="'+i+'" data-field="t">'+esc(it.t)+'</span>'+
-            (forSettings && ui.editMode ? '<button type="button" class="field-edit-btn" data-focus-idx="'+i+'" data-focus-field="t" title="Modifier le titre" aria-label="Modifier le titre">'+pencilIconSVG()+'</button>' : '')+
+            '<span'+ce(ui.editingIdx === i)+' data-idx="'+i+'" data-field="t">'+esc(it.t)+'</span>'+
+            (forSettings && ui.editingIdx === i ? '<button type="button" class="field-edit-btn" data-focus-idx="'+i+'" data-focus-field="t" title="Modifier le titre" aria-label="Modifier le titre">'+pencilIconSVG()+'</button>' : '')+
           '</h3>'+
           '<div class="desc-row">'+
-            '<p class="desc"'+ce(ui.editMode)+' data-idx="'+i+'" data-field="d">'+esc(it.d)+'</p>'+
-            (forSettings && ui.editMode ? '<button type="button" class="field-edit-btn" data-focus-idx="'+i+'" data-focus-field="d" title="Modifier la description" aria-label="Modifier la description">'+pencilIconSVG()+'</button>' : '')+
+            '<p class="desc"'+ce(ui.editingIdx === i)+' data-idx="'+i+'" data-field="d">'+esc(it.d)+'</p>'+
+            (forSettings && ui.editingIdx === i ? '<button type="button" class="field-edit-btn" data-focus-idx="'+i+'" data-focus-field="d" title="Modifier la description" aria-label="Modifier la description">'+pencilIconSVG()+'</button>' : '')+
           '</div>'+
           '<div class="price-row">'+
-            '<span class="price-old"'+ce(ui.editMode)+' data-idx="'+i+'" data-field="old">'+esc(it.old)+'</span>'+
-            (forSettings && ui.editMode ? '<button type="button" class="field-edit-btn" data-focus-idx="'+i+'" data-focus-field="old" title="Modifier le prix d\'origine" aria-label="Modifier le prix d\'origine">'+pencilIconSVG()+'</button>' : '')+
-            '<span class="price-new"'+ce(ui.editMode)+' data-idx="'+i+'" data-field="now">'+esc(it.now)+'</span>'+
-            (forSettings && ui.editMode ? '<span class="percent-field remise-field"><span class="fiche-field" contenteditable="true" data-idx="'+i+'" data-field="remise" data-placeholder="0">'+esc(it.remise||'0')+'</span><span class="percent-sign">%</span></span>' : '')+
+            '<span class="price-old"'+ce(ui.editingIdx === i)+' data-idx="'+i+'" data-field="old">'+esc(it.old)+'</span>'+
+            (forSettings && ui.editingIdx === i ? '<button type="button" class="field-edit-btn" data-focus-idx="'+i+'" data-focus-field="old" title="Modifier le prix d\'origine" aria-label="Modifier le prix d\'origine">'+pencilIconSVG()+'</button>' : '')+
+            '<span class="price-new"'+ce(ui.editingIdx === i)+' data-idx="'+i+'" data-field="now">'+esc(it.now)+'</span>'+
+            (forSettings && ui.editingIdx === i ? '<span class="percent-field remise-field"><span class="fiche-field" contenteditable="true" data-idx="'+i+'" data-field="remise" data-placeholder="0">'+esc(it.remise||'0')+'</span><span class="percent-sign">%</span></span>' : '')+
           '</div>'+
           '<div class="add-row"><span style="font-size:0.75rem; color:var(--ink-soft);">'+(it.sold?'Vendu':'Stock: 1')+'</span>'+
             (forSeller ?
-              '<button class="edit-item-btn'+(ui.editMode?' active':'')+'" type="button" data-idx="'+i+'">'+(ui.editMode?'✓ Terminé':'✏️ Éditer')+'</button>'
+              '<button class="edit-item-btn'+(ui.editingIdx === i?' active':'')+'" type="button" data-idx="'+i+'">'+(ui.editingIdx === i?'✓ Terminé':'✏️ Éditer')+'</button>'
             :
               '<button class="add-btn'+(ui.cart.indexOf(i)!==-1?' in-cart':'')+'" type="button" data-idx="'+i+'"'+(it.sold?' disabled':'')+'>'+(it.sold?'Vendu':(ui.cart.indexOf(i)!==-1?'✓ Ajouté':'Ajouter'))+'</button>'
             )+
           '</div>'+
         '</div>'+
-        (forSettings && ui.editMode ? '<div class="card-actions">'+
+        (forSettings && ui.editingIdx === i ? '<div class="card-actions">'+
           '<button class="color-edit-btn" type="button" data-color-edit-idx="'+i+'">🎨 Modifier sa couleur</button>'+
           (ui.colorEditIdx === i ?
             '<div class="card-color-palette">'+
@@ -599,7 +599,7 @@
 
   function doLogout(){
     ui.auth.session = null;
-    ui.editMode = false;
+    ui.editingIdx = null;
     clearSession();
     render();
   }
@@ -607,7 +607,7 @@
   function vendrePageHTML(){
     var itemsHTML = ''+
       '<div style="margin-top:24px;">'+
-        '<div class="section-head"><div><h2 style="font-size:1.1rem;">Tes fiches en ligne</h2><p style="color:var(--ink-soft); font-size:0.9rem; margin:4px 0 20px;">'+STATE.items.length+' fiche'+(STATE.items.length>1?'s':'')+', visibles côté boutique'+(ui.editMode?' · clique une fiche pour la modifier':'')+'</p></div></div>'+
+        '<div class="section-head"><div><h2 style="font-size:1.1rem;">Tes fiches en ligne</h2><p style="color:var(--ink-soft); font-size:0.9rem; margin:4px 0 20px;">'+STATE.items.length+' fiche'+(STATE.items.length>1?'s':'')+', visibles côté boutique'+(ui.editingIdx !== null?' · clique une fiche pour la modifier':'')+'</p></div></div>'+
         '<div class="grid">'+STATE.items.map(function(it, i){ return cardHTML(it, i, true); }).join('')+'<button type="button" class="add-card" id="add-fiche-card"><span class="plus">+</span><span class="label">Ajouter un manga</span></button>'+'</div>'+
       '</div>';
     return ''+
@@ -815,7 +815,7 @@
       '</nav>'+
       '<div class="footer-meta"><span'+ce(inSettings)+(inSettings?' data-settings-field="texts.contactEmail"':'')+'>'+esc(inSettings?settingsDraft.texts.contactEmail:SETTINGS.texts.contactEmail)+'</span><span class="footer-copy"'+ce(inSettings)+(inSettings?' data-settings-field="texts.footerCopy"':'')+'>'+esc(inSettings?settingsDraft.texts.footerCopy:SETTINGS.texts.footerCopy)+'</span><span class="footer-copy">Illustration : pikisuperstar / Freepik</span></div>'+
     '</div></footer>'+
-    '<div class="savebar'+(ui.editMode?' show':'')+'"><div class="savebar-inner">'+
+    '<div class="savebar'+(ui.editingIdx !== null?' show':'')+'"><div class="savebar-inner">'+
       '<span class="savebar-status" id="save-status">'+(ui.status||(ui.dirty?'Modifications non enregistrées':'Aucune modification'))+'</span>'+
       '<button class="save-btn" id="save-btn" type="button"'+(ui.dirty?'':' disabled')+'>💾 Enregistrer</button>'+
     '</div></div>';
@@ -826,7 +826,8 @@
   function wire(){
     root.querySelectorAll('.edit-item-btn').forEach(function(btn){
       btn.addEventListener('click', function(){
-        ui.editMode = !ui.editMode;
+        var idx = parseInt(btn.getAttribute('data-idx'), 10);
+        ui.editingIdx = (ui.editingIdx === idx) ? null : idx;
         render();
       });
     });
@@ -1084,7 +1085,7 @@
     if (settingsBtn) settingsBtn.addEventListener('click', function(){
       ui.auth.open = false;
       ui.view = 'parametres';
-      ui.editMode = true;
+      ui.editingIdx = null;
       settingsDraft = JSON.parse(JSON.stringify(SETTINGS));
       settingsStatus = '';
       render();
@@ -1146,7 +1147,7 @@
     var homeBtn = document.getElementById('home-btn');
     if (homeBtn) homeBtn.addEventListener('click', function(){
       ui.view = 'boutique';
-      ui.editMode = false;
+      ui.editingIdx = null;
       render();
       window.scrollTo({top:0, behavior:'auto'});
     });
