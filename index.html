@@ -612,7 +612,7 @@
       '</div>';
     return ''+
     '<div class="wrap vendre-page">'+
-      '<button id="home-btn" class="btn btn-ghost" type="button" style="margin-bottom:18px; padding:7px 16px; font-size:0.82rem;">← Accueil</button>'+
+      '<button id="home-btn" class="btn btn-ghost" type="button" style="margin-bottom:18px; padding:7px 16px; font-size:0.82rem; background:#ffffff;">← Accueil</button>'+
       '<span class="eyebrow">Je vends un manga</span>'+
       '<h1>Vendre un manga</h1>'+
       (ui.auth.session ? itemsHTML : '<p style="text-align:center; color:var(--ink-soft); padding:24px 0;">Connecte-toi via le bouton en haut à droite pour accéder à cet espace.</p>')+
@@ -628,7 +628,7 @@
     var payHref = 'https://paypal.me/'+PAYPAL_ME+'/'+total.toFixed(2)+'EUR';
     return ''+
     '<div class="wrap panier-page">'+
-      '<button id="home-btn" class="btn btn-ghost" type="button" style="margin-bottom:18px; padding:7px 16px; font-size:0.82rem;">← Accueil</button>'+
+      '<button id="home-btn" class="btn btn-ghost" type="button" style="margin-bottom:18px; padding:7px 16px; font-size:0.82rem; background:#ffffff;">← Accueil</button>'+
       '<span class="eyebrow">Ton panier</span>'+
       '<h1>Panier</h1>'+
       (lines.length === 0 ?
@@ -663,7 +663,7 @@
   function parametresHTML(){
     if (!ui.auth.session) {
       return '<div class="wrap parametres-page">'+
-        '<button id="home-btn" class="btn btn-ghost" type="button" style="margin-bottom:18px; padding:7px 16px; font-size:0.82rem;">← Accueil</button>'+
+        '<button id="home-btn" class="btn btn-ghost" type="button" style="margin-bottom:18px; padding:7px 16px; font-size:0.82rem; background:#ffffff;">← Accueil</button>'+
         '<p style="text-align:center; color:var(--ink-soft); padding:40px 0 8px;">Connecte-toi via le bouton en haut à droite pour accéder aux paramètres.</p>'+
         (settingsStatus ? '<p class="form-status err" style="text-align:center;">'+esc(settingsStatus)+'</p>' : '')+
       '</div>';
@@ -675,7 +675,7 @@
     return ''+
     '<div class="wrap parametres-page">'+
       '<div class="settings-toolbar">'+
-        '<button id="home-btn" class="btn btn-ghost" type="button">← Accueil</button>'+
+        '<button id="home-btn" class="btn btn-ghost" type="button" style="background:#ffffff;">← Accueil</button>'+
         '<p class="settings-hint">⚙️ Mode édition : clique sur le nom du site, le titre de la bannière ou le pied de page directement sur la page pour les modifier. Clique sur une fiche ci-dessous pour la modifier, comme sur la page Vendre.</p>'+
       '</div>'+
       '<div class="settings-card">'+
@@ -695,7 +695,7 @@
         '<button class="btn btn-primary" type="button" id="settings-save-btn"'+(settingsBusy?' disabled':'')+'>'+(settingsBusy?'Enregistrement…':'Enregistrer')+'</button>'+
       '</div>'+
       '<div style="margin-top:24px;">'+
-        '<div class="section-head"><div><h2 style="font-size:1.1rem;">Tes fiches</h2><p style="color:var(--ink-soft); font-size:0.9rem; margin:4px 0 20px;">'+STATE.items.length+' fiche'+(STATE.items.length>1?'s':'')+' · clique une fiche pour la modifier</p></div></div>'+
+        '<div class="section-head" style="background:#ffffff; border:1px solid var(--line); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow); margin-bottom:20px;"><div><h2 style="font-size:1.1rem; margin:0;">Tes fiches</h2><p style="color:var(--ink-soft); font-size:0.9rem; margin:4px 0 0;">'+STATE.items.length+' fiche'+(STATE.items.length>1?'s':'')+' · clique une fiche pour la modifier</p></div></div>'+
         itemsHTML+
       '</div>'+
       (ui.ficheModalOpen ? ficheModalHTML() : '')+
