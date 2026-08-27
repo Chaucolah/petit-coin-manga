@@ -17,7 +17,7 @@
   body{margin:0; background:var(--bg); color:var(--ink); font-family:'Manrope', system-ui, sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased;}
   h1,h2,h3,.brand{font-family:'Comfortaa','Manrope',system-ui,sans-serif; text-wrap:balance; font-weight:700; letter-spacing:-0.01em;}
   a{color:inherit;}
-  .wrap{max-width:1080px; margin:0 auto; padding:0 24px;}
+  .wrap{max-width:1280px; margin:0 auto; padding:0 16px;}
 
   header.site{position:sticky; top:0; z-index:10; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
   .site-inner{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; gap:16px; flex-wrap:wrap;}
@@ -515,7 +515,9 @@
       return cardHTML(it, i);
     }).join('');
 
+    var isHome = (ui.view !== 'contact' && ui.view !== 'vendre' && ui.view !== 'panier');
     root.innerHTML = ''+
+    (isHome ? '<div class="wrap"><div class="top-banner"><img src="'+HERO_BANNER_SRC+'" alt="Bannière Petit Coin Manga"></div></div>' : '')+
     '<header class="site"><div class="site-inner">'+
       '<div class="brand"><img class="brand-mark" src="'+LOGO_SRC+'" alt="Mascotte Petit Coin Manga">Petit Coin Manga</div>'+
       '<div class="header-actions">'+
@@ -528,7 +530,6 @@
     (ui.view === 'contact' ? contactHTML().replace('wrap contact-page', 'contact-page') :
      ui.view === 'vendre' ? vendrePageHTML().replace('wrap vendre-page', 'vendre-page') :
      ui.view === 'panier' ? panierHTML().replace('wrap panier-page', 'panier-page') : ''+
-      '<div class="top-banner"><img src="'+HERO_BANNER_SRC+'" alt="Bannière Petit Coin Manga"></div>'+
       '<section class="hero"><div class="hero-inner"><div>'+
         '<span class="eyebrow">Seconde vie pour vos mangas</span>'+
         '<h1>Des mangas et objets geek qui méritent une nouvelle étagère.</h1>'+
