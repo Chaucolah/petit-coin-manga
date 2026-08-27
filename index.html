@@ -667,7 +667,6 @@
   function parametresHTML(){
     if (!ui.auth.session) {
       return '<div class="wrap parametres-page">'+
-        '<button id="home-btn" class="btn btn-ghost" type="button" style="margin-bottom:18px; padding:7px 16px; font-size:0.82rem; background:#ffffff;">← Accueil</button>'+
         '<p style="text-align:center; color:var(--ink-soft); padding:40px 0 8px;">Connecte-toi via le bouton en haut à droite pour accéder aux paramètres.</p>'+
         (settingsStatus ? '<p class="form-status err" style="text-align:center;">'+esc(settingsStatus)+'</p>' : '')+
       '</div>';
@@ -679,8 +678,12 @@
     return ''+
     '<div class="wrap parametres-page">'+
       '<div class="settings-toolbar">'+
-        '<button id="home-btn" class="btn btn-ghost" type="button" style="background:#ffffff;">← Accueil</button>'+
         '<p class="settings-hint">⚙️ Mode édition : clique sur le nom du site, le titre de la bannière ou le pied de page directement sur la page pour les modifier. Clique sur une fiche ci-dessous pour la modifier, comme sur la page Vendre.</p>'+
+      '</div>'+
+      '<div class="settings-actions" style="margin-bottom:20px;">'+
+        '<span class="form-status'+(settingsStatus?(settingsStatus.indexOf('Échec')>-1||settingsStatus.indexOf('expiré')>-1?' err':' ok'):'')+'" id="settings-status" style="margin:0;">'+(settingsStatus?esc(settingsStatus):'')+'</span>'+
+        '<button class="btn btn-ghost" type="button" id="settings-reset-btn" style="background:#ffffff;">Réinitialiser</button>'+
+        '<button class="btn btn-primary" type="button" id="settings-save-btn"'+(settingsBusy?' disabled':'')+'>'+(settingsBusy?'Enregistrement…':'Enregistrer')+'</button>'+
       '</div>'+
       '<div class="settings-card">'+
         '<h3 style="margin:0 0 6px; font-size:1rem;">Onglets du catalogue</h3>'+
@@ -692,11 +695,6 @@
           '<span class="chip"'+ce(true)+' data-settings-field="categories.goodies" data-placeholder="Goodies">'+esc(cat.goodies)+'</span>'+
           '<span class="chip"'+ce(true)+' data-settings-field="categories.promo" data-placeholder="En promo">'+esc(cat.promo)+'</span>'+
         '</div>'+
-      '</div>'+
-      '<div class="settings-actions">'+
-        '<span class="form-status'+(settingsStatus?(settingsStatus.indexOf('Échec')>-1||settingsStatus.indexOf('expiré')>-1?' err':' ok'):'')+'" id="settings-status" style="margin:0;">'+(settingsStatus?esc(settingsStatus):'')+'</span>'+
-        '<button class="btn btn-ghost" type="button" id="settings-reset-btn" style="background:#ffffff;">Réinitialiser</button>'+
-        '<button class="btn btn-primary" type="button" id="settings-save-btn"'+(settingsBusy?' disabled':'')+'>'+(settingsBusy?'Enregistrement…':'Enregistrer')+'</button>'+
       '</div>'+
       '<div style="margin-top:24px;">'+
         '<div class="section-head" style="background:#ffffff; border:1px solid var(--line); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow); margin-bottom:20px;"><div><h2 style="font-size:1.1rem; margin:0;">Tes fiches</h2><p style="color:var(--ink-soft); font-size:0.9rem; margin:4px 0 0;">'+STATE.items.length+' fiche'+(STATE.items.length>1?'s':'')+' · clique une fiche pour la modifier</p></div></div>'+
@@ -753,6 +751,7 @@
     var brandText = inSettings ? settingsDraft.texts.brand : SETTINGS.texts.brand;
     var heroText = inSettings ? settingsDraft.texts.heroTitle : SETTINGS.texts.heroTitle;
     var navActionsHTML = ''+
+        (inSettings ? '<button id="home-btn" class="btn btn-ghost" type="button" style="background:#ffffff;">← Accueil</button>' : '')+
         authHeaderHTML()+
         '<a data-view="contact" class="header-contact-link'+(ui.view==='contact'?' active':'')+'">Contact</a>'+
         '<button class="cart-pill" type="button" id="cart-pill-btn">🛍️ Panier · '+ui.cart.length+'</button>';
