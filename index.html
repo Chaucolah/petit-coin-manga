@@ -122,6 +122,12 @@
   .cover .photo-note{position:absolute; bottom:10px; right:10px; font-size:0.66rem; background:rgba(0,0,0,0.35); color:#fff; border-radius:6px; padding:3px 7px;}
   .card-body{padding:14px 16px 16px; display:flex; flex-direction:column; gap:8px; flex:1;}
   .card-body h3{font-size:0.98rem; margin:0; font-family:'Manrope'; font-weight:700;}
+  .card-title-row{display:flex; align-items:center; gap:6px;}
+  .title-edit-btn{border:none; background:transparent; cursor:pointer; font-size:0.85rem; opacity:0.55; padding:2px; line-height:1;}
+  .title-edit-btn:hover{opacity:1;}
+  .cover-photo-btn{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:46px; height:46px; border-radius:50%; background:rgba(20,18,16,0.6); color:#fff; border:2px solid rgba(255,255,255,0.85); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:3; padding:0;}
+  .cover-photo-btn:hover{background:rgba(20,18,16,0.8);}
+  .cover-photo-btn svg{width:20px; height:20px;}
   .card-body .desc{font-size:0.83rem; color:var(--ink-soft); margin:0;}
   .price-row{margin-top:auto; display:flex; align-items:baseline; gap:8px; font-variant-numeric:tabular-nums;}
   .price-old{color:var(--ink-soft); text-decoration:line-through; font-size:0.84rem;}
@@ -156,6 +162,15 @@
   .card-actions .delete-item-btn{flex:none; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:999px; cursor:pointer; border:1px solid #e3c3bd; background:transparent; color:#a8493f; padding:0;}
   .card-actions .delete-item-btn svg{width:16px; height:16px;}
   .card-actions .delete-item-btn:hover{background:#fbebe8;}
+  .card-actions{flex-wrap:wrap;}
+  .color-edit-btn{flex:1; border-radius:999px; padding:6px 8px; font-size:0.72rem; font-weight:700; cursor:pointer; border:1px solid var(--line); background:transparent; color:var(--ink);}
+  .color-edit-btn:hover{border-color:var(--sage); color:var(--sage-ink);}
+  .card-color-palette{display:flex; align-items:center; gap:6px; flex-wrap:wrap; width:100%; padding-top:8px;}
+  .palette-swatch{width:24px; height:24px; border-radius:50%; border:2px solid var(--line); cursor:pointer; padding:0;}
+  .palette-swatch.active{border-color:var(--ink); box-shadow:0 0 0 2px var(--surface), 0 0 0 3px var(--ink);}
+  .palette-custom{width:30px; height:30px; padding:0; border:1px solid var(--line); border-radius:50%; background:var(--bg); cursor:pointer; overflow:hidden;}
+  .palette-confirm-btn{width:28px; height:28px; border-radius:50%; border:none; background:var(--sage); color:#fff; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;}
+  .palette-confirm-btn:hover{filter:brightness(0.92);}
   .add-card{border:2px dashed var(--line); border-radius:var(--radius); background:transparent; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-height:280px; width:100%; color:var(--ink-soft); font-family:inherit; cursor:pointer; transition:border-color .15s, color .15s, background .15s;}
   .add-card:hover{border-color:var(--sage); color:var(--sage-ink); background:var(--surface-2);}
   .add-card .plus{font-size:2.6rem; font-weight:300; line-height:1;}
@@ -315,8 +330,9 @@
       });
   }
 
-  var ui = { view: 'boutique', filter: 'all', editMode: false, ficheModalOpen: false, cart: [], dirty: false, status: '', contactState: 'idle',
+  var ui = { view: 'boutique', filter: 'all', editMode: false, ficheModalOpen: false, cart: [], dirty: false, status: '', contactState: 'idle', colorEditIdx: null,
     auth: { session: null, mode: 'signup', status: '', busy: false, open: false } };
+  var PRESET_HUES = ['#6e9083', '#d9bdf0', '#b1852f', '#0de0c4', '#ff2996', '#e3c3bd', '#2c2a2e', '#3d6bd9'];
   var root = document.getElementById('root');
   var outsideClickBound = false;
   var artifactCap = null;
@@ -338,14 +354,22 @@
       : '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3V4Z"/><path d="M18 20a3 3 0 0 0 0-6"/></svg>'+
         '<span class="photo-note">photo à venir</span>';
     return ''+
-      '<div class="card">'+
+      '<div class="card" data-card-idx="'+i+'">'+
         '<div class="cover'+(it.sold?' is-sold':'')+'" style="background:linear-gradient(160deg,'+it.hue+', color-mix(in srgb, '+it.hue+' 60%, var(--ink) 15%))">'+
           '<span class="badge">'+esc(it.tag)+'</span>'+
           coverInner+
           (it.sold ? '<div class="sold-ribbon"><span>Vendu</span></div>' : '')+
+          (ui.editMode ? '<button type="button" class="cover-photo-btn" data-photo-idx="'+i+'" title="Changer la photo" aria-label="Changer la photo">'+
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="14" r="3.4"/></svg>'+
+          '</button>'+
+          '<input type="file" accept="image/*" class="cover-photo-input" data-photo-input-idx="'+i+'" style="display:none;">'
+          : '')+
         '</div>'+
         '<div class="card-body">'+
-          '<h3'+ce(ui.editMode)+' data-idx="'+i+'" data-field="t">'+esc(it.t)+'</h3>'+
+          '<h3 class="card-title-row">'+
+            '<span'+ce(ui.editMode)+' data-idx="'+i+'" data-field="t">'+esc(it.t)+'</span>'+
+            (ui.editMode ? '<button type="button" class="title-edit-btn" data-focus-idx="'+i+'" title="Modifier le titre" aria-label="Modifier le titre">✏️</button>' : '')+
+          '</h3>'+
           '<p class="desc"'+ce(ui.editMode)+' data-idx="'+i+'" data-field="d">'+esc(it.d)+'</p>'+
           '<div class="price-row">'+
             '<span class="price-old"'+ce(ui.editMode)+' data-idx="'+i+'" data-field="old">'+esc(it.old)+'</span>'+
@@ -360,10 +384,14 @@
           '</div>'+
         '</div>'+
         (ui.editMode ? '<div class="card-actions">'+
-          '<button class="sold-toggle-btn'+(it.sold?' active':'')+'" type="button" data-sold-idx="'+i+'">'+(it.sold?'↺ Remettre en vente':'✓ Marquer vendu')+'</button>'+
-          '<button class="delete-item-btn" type="button" data-delete-idx="'+i+'" title="Supprimer" aria-label="Supprimer">'+
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>'+
-          '</button>'+
+          '<button class="color-edit-btn" type="button" data-color-edit-idx="'+i+'">🎨 Modifier sa couleur</button>'+
+          (ui.colorEditIdx === i ?
+            '<div class="card-color-palette">'+
+              PRESET_HUES.map(function(h){ return '<button type="button" class="palette-swatch'+(it.hue===h?' active':'')+'" data-hue-idx="'+i+'" data-hue-val="'+h+'" style="background:'+h+';" aria-label="Choisir cette couleur"></button>'; }).join('')+
+              '<input type="color" class="palette-custom" data-hue-input-idx="'+i+'" value="'+(it.hue && it.hue.charAt(0)==='#' ? it.hue : '#6e9083')+'">'+
+              '<button type="button" class="palette-confirm-btn" data-hue-confirm-idx="'+i+'" title="Valider" aria-label="Valider">✓</button>'+
+            '</div>'
+          : '')+
         '</div>' : '')+
       '</div>';
   }
@@ -859,22 +887,78 @@
       });
     });
 
-    root.querySelectorAll('[data-sold-idx]').forEach(function(el){
-      el.addEventListener('click', function(){
-        var i = parseInt(el.getAttribute('data-sold-idx'), 10);
-        STATE.items[i].sold = !STATE.items[i].sold;
+    root.querySelectorAll('[data-focus-idx]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var i = btn.getAttribute('data-focus-idx');
+        var titleEl = root.querySelector('.card[data-card-idx="'+i+'"] [data-field="t"]');
+        if (titleEl) titleEl.focus();
+      });
+    });
+
+    root.querySelectorAll('[data-photo-idx]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var i = btn.getAttribute('data-photo-idx');
+        var input = root.querySelector('[data-photo-input-idx="'+i+'"]');
+        if (input) input.click();
+      });
+    });
+
+    root.querySelectorAll('[data-photo-input-idx]').forEach(function(input){
+      input.addEventListener('change', function(){
+        var i = parseInt(input.getAttribute('data-photo-input-idx'), 10);
+        var file = input.files && input.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(e){
+          var img = new Image();
+          img.onload = function(){
+            var maxW = 900;
+            var scale = Math.min(1, maxW / img.width);
+            var canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            STATE.items[i].img = canvas.toDataURL('image/jpeg', 0.85);
+            markDirty();
+            render();
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    root.querySelectorAll('[data-color-edit-idx]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var i = parseInt(btn.getAttribute('data-color-edit-idx'), 10);
+        ui.colorEditIdx = (ui.colorEditIdx === i) ? null : i;
+        render();
+      });
+    });
+
+    root.querySelectorAll('[data-hue-idx]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var i = parseInt(btn.getAttribute('data-hue-idx'), 10);
+        STATE.items[i].hue = btn.getAttribute('data-hue-val');
         markDirty();
         render();
       });
     });
 
-    root.querySelectorAll('[data-delete-idx]').forEach(function(el){
-      el.addEventListener('click', function(){
-        var i = parseInt(el.getAttribute('data-delete-idx'), 10);
-        var titre = STATE.items[i] && STATE.items[i].t;
-        if (!window.confirm('Supprimer définitivement "'+titre+'" du catalogue ?')) return;
-        STATE.items.splice(i, 1);
+    root.querySelectorAll('[data-hue-input-idx]').forEach(function(inp){
+      inp.addEventListener('input', function(){
+        var i = inp.getAttribute('data-hue-input-idx');
+        STATE.items[parseInt(i, 10)].hue = inp.value;
         markDirty();
+        var cov = root.querySelector('.card[data-card-idx="'+i+'"] .cover');
+        if (cov) cov.style.background = 'linear-gradient(160deg,'+inp.value+', color-mix(in srgb, '+inp.value+' 60%, var(--ink) 15%))';
+      });
+    });
+
+    root.querySelectorAll('[data-hue-confirm-idx]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        ui.colorEditIdx = null;
         render();
       });
     });
