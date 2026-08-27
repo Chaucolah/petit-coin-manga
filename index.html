@@ -101,8 +101,8 @@
   .add-btn:disabled{opacity:0.5; cursor:default;}
   .add-btn:disabled:hover{background:transparent; border-color:var(--line); color:var(--ink);}
   .cover.is-sold img{filter:grayscale(1) brightness(0.6);}
-  .sold-ribbon{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(20,18,16,0.18);}
-  .sold-ribbon span{background:rgba(20,18,16,0.88); color:#fff; font-weight:800; font-size:0.82rem; text-transform:uppercase; letter-spacing:0.08em; padding:6px 20px; border-radius:6px; transform:rotate(-8deg); box-shadow:0 3px 10px rgba(0,0,0,0.3);}
+  .sold-ribbon{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(20,18,16,0.12); padding:10px;}
+  .sold-ribbon span{background:rgba(255,255,255,0.92); color:#d31d16; font-weight:900; font-size:1.9rem; line-height:1; text-transform:uppercase; letter-spacing:0.05em; padding:8px 18px; border-radius:8px; border:4px solid #d31d16; transform:rotate(-10deg); box-shadow:0 4px 14px rgba(0,0,0,0.35); text-align:center;}
   .card-actions{display:flex; gap:8px; padding:0 16px 14px;}
   .card-actions .sold-toggle-btn{flex:1; border-radius:999px; padding:6px 8px; font-size:0.72rem; font-weight:700; cursor:pointer; border:1px solid var(--line); background:transparent; color:var(--ink);}
   .card-actions .sold-toggle-btn.active{background:var(--gold-bg); border-color:var(--gold); color:var(--gold);}
@@ -224,14 +224,14 @@
   function sellerHTML(){
     var f = STATE.fiche;
     var achat = money(f.achat), vente = money(f.vente);
-    var marge = (achat !== null && vente !== null) ? (vente - achat).toFixed(2).replace('.', ',') + ' €' : '—';
+    var marge = (achat !== null && vente !== null) ? (vente - achat).toFixed(2).replace('.', ',') + ' €' : 'N/A';
     var canAdd = !!(f.titre && f.titre.trim() && f.origine && f.origine.trim() && f.vente && f.vente.trim());
     return ''+
       '<div class="seller-box">'+
         '<div>'+
           '<span class="internal-tag">Fiche interne · usage vendeuse</span>'+
           '<h2>Un suivi simple derrière chaque annonce</h2>'+
-          '<p>Le prix d\'achat et la marge restent privés — seuls la description, le prix d\'origine et le prix de vente sont visibles côté boutique.</p>'+
+          '<p>Le prix d\'achat et la marge restent privés. Seuls la description, le prix d\'origine et le prix de vente sont visibles côté boutique.</p>'+
           '<ul class="field-list">'+
             '<li><span>Titre</span><span class="fiche-field"'+ce(ui.editMode)+' data-fiche="titre" data-placeholder="Titre du manga">'+esc(f.titre)+'</span></li>'+
             '<li><span>État</span><span class="fiche-field"'+ce(ui.editMode)+' data-fiche="etat" data-placeholder="Bon état général">'+esc(f.etat)+'</span></li>'+
@@ -249,7 +249,7 @@
         '<div>'+
           '<span class="internal-tag">Ajout photo</span>'+
           '<h2 style="font-size:1.05rem; margin-bottom:6px;">Photo de l\'annonce</h2>'+
-          '<p>Choisis une photo pour cette fiche — couverture, dos, tranche, détail d\'un défaut éventuel.</p>'+
+          '<p>Choisis une photo pour cette fiche : couverture, dos, tranche, détail d\'un défaut éventuel.</p>'+
           '<input id="fiche-photo-input" type="file" accept="image/*" style="display:none;">'+
           (ui.fichePhoto ?
             '<div style="border:1px solid var(--line); border-radius:14px; padding:14px; text-align:center; background:var(--surface);">'+
@@ -386,7 +386,7 @@
   function vendrePageHTML(){
     var itemsHTML = ''+
       '<div style="margin-top:36px;">'+
-        '<div class="section-head"><div><h2 style="font-size:1.1rem;">Tes fiches en ligne</h2><p style="color:var(--ink-soft); font-size:0.9rem; margin:4px 0 20px;">'+STATE.items.length+' fiche'+(STATE.items.length>1?'s':'')+' — visibles côté boutique'+(ui.editMode?' · clique une fiche pour la modifier':'')+'</p></div></div>'+
+        '<div class="section-head"><div><h2 style="font-size:1.1rem;">Tes fiches en ligne</h2><p style="color:var(--ink-soft); font-size:0.9rem; margin:4px 0 20px;">'+STATE.items.length+' fiche'+(STATE.items.length>1?'s':'')+', visibles côté boutique'+(ui.editMode?' · clique une fiche pour la modifier':'')+'</p></div></div>'+
         '<div class="grid">'+STATE.items.map(function(it, i){ return cardHTML(it, i); }).join('')+'</div>'+
       '</div>';
     return ''+
@@ -409,7 +409,7 @@
       '<div>'+
         '<span class="eyebrow">Une question, un manga en tête ?</span>'+
         '<h1>Écris-nous</h1>'+
-        '<p class="lead">Pour une demande sur un article précis, une réservation, ou juste dire bonjour — le formulaire arrive directement dans notre boîte de réception.</p>'+
+        '<p class="lead">Pour une demande sur un article précis, une réservation, ou juste dire bonjour, le formulaire arrive directement dans notre boîte de réception.</p>'+
         '<div class="contact-info">'+
           '<div><strong>Email</strong><br>contact@petitcoinmanga.fr</div>'+
           '<div><strong>Délai de réponse</strong><br>Sous 48h en général</div>'+
@@ -635,7 +635,7 @@
           var mv = document.getElementById('marge-val');
           if (mv) {
             var achat = money(STATE.fiche.achat), vente = money(STATE.fiche.vente);
-            mv.textContent = (achat !== null && vente !== null) ? (vente - achat).toFixed(2).replace('.', ',') + ' €' : '—';
+            mv.textContent = (achat !== null && vente !== null) ? (vente - achat).toFixed(2).replace('.', ',') + ' €' : 'N/A';
           }
         }
       });
@@ -745,9 +745,9 @@
         return;
       }
       if (code === 'not_writer' || code === 'not_granted' || code === 'consent_required') {
-        ui.status = 'Lecture seule ici — tu ne peux pas enregistrer depuis cette vue.';
+        ui.status = 'Lecture seule ici : tu ne peux pas enregistrer depuis cette vue.';
       } else if (code === 'rate_limited') {
-        ui.status = 'Trop d\'enregistrements rapprochés — patiente un instant.';
+        ui.status = 'Trop d\'enregistrements rapprochés, patiente un instant.';
       } else {
         ui.status = 'Échec de l\'enregistrement, réessaie.';
       }
