@@ -793,7 +793,7 @@
     var brandText = inSettings ? settingsDraft.texts.brand : SETTINGS.texts.brand;
     var heroText = inSettings ? settingsDraft.texts.heroTitle : SETTINGS.texts.heroTitle;
     var logoSrc = ((inSettings ? settingsDraft.colors.logoImage : SETTINGS.colors.logoImage) || LOGO_SRC);
-    var heroSizeMap = { sm:'clamp(1.6rem, 4vw, 2.4rem)', md:'clamp(2rem, 5vw, 3.6rem)', lg:'clamp(2.4rem, 6vw, 4.4rem)' };
+    var heroSizeMap = { sm:'clamp(1.6rem, 4vw, 2.4rem)', md:'clamp(2rem, 5vw, 3.6rem)', lg:'clamp(2.2rem, 5.4vw, 3.9rem)' };
     var heroSizeKey = (inSettings ? settingsDraft.colors.heroTitleSize : SETTINGS.colors.heroTitleSize) || 'md';
     if (!heroSizeMap[heroSizeKey]) heroSizeKey = 'md';
     var heroBold = (inSettings ? settingsDraft.colors.heroTitleBold : SETTINGS.colors.heroTitleBold);
