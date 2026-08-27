@@ -28,6 +28,8 @@
   .site-inner{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; gap:16px; flex-wrap:wrap;}
   .brand{display:flex; align-items:center; gap:10px; font-size:1.15rem; color:var(--ink);}
   .brand-mark{width:34px; height:34px; border-radius:50%; flex:none; object-fit:cover; box-shadow:0 0 0 1px var(--line);}
+  .logo-wrap{position:relative; display:inline-flex; flex:none;}
+  .logo-photo-btn{position:absolute; bottom:-2px; right:-2px; width:18px; height:18px; border-radius:50%; background:rgba(20,18,16,0.75); color:#fff; border:1.5px solid #fff; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:3; padding:0; font-size:0.6rem; line-height:1;}
   nav.site-nav{display:flex; gap:28px; font-size:0.92rem; color:var(--ink-soft);}
   nav.site-nav a{text-decoration:none; cursor:pointer; padding-bottom:2px; border-bottom:2px solid transparent;}
   nav.site-nav a:hover{color:var(--ink);}
@@ -248,9 +250,9 @@
   var STATE = JSON.parse(document.getElementById('state-data').textContent);
   var OWNER_EMAIL = 'marie-lam-21@hotmail.fr';
   var DEFAULT_SETTINGS = {
-    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false },
+    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false, logoImage:'', heroTitleSize:'md', heroTitleBold:true },
     texts: { brand:'Petit Coin Manga', heroTitle:'Des mangas et objets geek qui méritent une nouvelle étagère.', contactEmail:'contact@petitcoinmanga.fr', footerCopy:'© 2026 Petit Coin Manga' },
-    categories: [{key:'shonen', label:'Shônen'}, {key:'seinen', label:'Seinen'}, {key:'goodies', label:'Goodies'}, {key:'promo', label:'En promo'}]
+    categories: [{key:'shonen', label:'Shônen', hidden:false}, {key:'seinen', label:'Seinen', hidden:false}, {key:'goodies', label:'Goodies', hidden:false}, {key:'promo', label:'En promo', hidden:false}]
   };
   var SETTINGS = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
   var settingsDraft = null;
@@ -297,10 +299,10 @@
 
   function normalizeCategories(cats){
     if (Array.isArray(cats) && cats.length) {
-      return cats.filter(function(c){ return c && c.key; }).map(function(c){ return { key: c.key, label: c.label || c.key }; });
+      return cats.filter(function(c){ return c && c.key; }).map(function(c){ return { key: c.key, label: c.label || c.key, hidden: !!c.hidden }; });
     }
     if (cats && typeof cats === 'object' && Object.keys(cats).length) {
-      return Object.keys(cats).map(function(k){ return { key: k, label: cats[k] }; });
+      return Object.keys(cats).map(function(k){ return { key: k, label: cats[k], hidden: false }; });
     }
     return JSON.parse(JSON.stringify(DEFAULT_SETTINGS.categories));
   }
@@ -726,13 +728,14 @@
       '</div>'+
       '<div class="settings-card">'+
         '<h3 style="margin:0 0 6px; font-size:1rem;">Onglets du catalogue</h3>'+
-        '<p style="margin:0 0 14px; font-size:0.8rem; color:var(--ink-soft);">Clique sur un onglet pour le renommer, sur la croix pour le supprimer, ou ajoute-en un nouveau. "Tout" reste fixe.</p>'+
+        '<p style="margin:0 0 14px; font-size:0.8rem; color:var(--ink-soft);">Clique sur un onglet pour le renommer, sur l\'œil pour le masquer ou l\'afficher côté public, ou ajoute-en un nouveau. "Tout" reste fixe.</p>'+
         '<div class="filters">'+
           '<span class="chip active" style="cursor:default;">Tout</span>'+
           catsDraft.map(function(c, ci){
-            return '<span class="chip" style="display:inline-flex; align-items:center; gap:6px; padding-right:8px;">'+
+            return '<span class="chip" style="display:inline-flex; align-items:center; gap:6px; padding-right:8px;'+(c.hidden?' opacity:0.5;':'')+'">'+
               '<span'+ce(true)+' data-settings-field="categories.'+ci+'.label" data-placeholder="Nom">'+esc(c.label)+'</span>'+
-              '<button type="button" class="cat-remove-btn" data-cat-remove-idx="'+ci+'" title="Supprimer cet onglet" aria-label="Supprimer cet onglet">×</button>'+
+              (c.hidden ? '<span style="font-size:0.7rem; color:var(--ink-soft);">(masqué)</span>' : '')+
+              '<button type="button" class="cat-remove-btn" data-cat-toggle-idx="'+ci+'" title="'+(c.hidden?'Rendre visible au public':'Masquer au public')+'" aria-label="'+(c.hidden?'Rendre visible au public':'Masquer au public')+'">'+(c.hidden?'🙈':'👁️')+'</button>'+
             '</span>';
           }).join('')+
           '<button type="button" id="cat-add-btn" class="chip" style="cursor:pointer; border-style:dashed; background:transparent;">+ Ajouter un onglet</button>'+
@@ -775,7 +778,7 @@
   }
 
   function render(){
-    var chips = [{k:'all', l:'Tout'}].concat((SETTINGS.categories || []).map(function(c){ return {k:c.key, l:c.label}; })).map(function(c){
+    var chips = [{k:'all', l:'Tout'}].concat((SETTINGS.categories || []).filter(function(c){ return !c.hidden; }).map(function(c){ return {k:c.key, l:c.label}; })).map(function(c){
       return '<button class="chip'+(ui.filter===c.k?' active':'')+'" type="button" data-filter="'+c.k+'">'+esc(c.l)+'</button>';
     }).join('');
 
@@ -789,6 +792,12 @@
     if (inSettings && !settingsDraft) settingsDraft = JSON.parse(JSON.stringify(SETTINGS));
     var brandText = inSettings ? settingsDraft.texts.brand : SETTINGS.texts.brand;
     var heroText = inSettings ? settingsDraft.texts.heroTitle : SETTINGS.texts.heroTitle;
+    var logoSrc = ((inSettings ? settingsDraft.colors.logoImage : SETTINGS.colors.logoImage) || LOGO_SRC);
+    var heroSizeMap = { sm:'clamp(1.6rem, 4vw, 2.4rem)', md:'clamp(2rem, 5vw, 3.6rem)', lg:'clamp(2.4rem, 6vw, 4.4rem)' };
+    var heroSizeKey = (inSettings ? settingsDraft.colors.heroTitleSize : SETTINGS.colors.heroTitleSize) || 'md';
+    if (!heroSizeMap[heroSizeKey]) heroSizeKey = 'md';
+    var heroBold = (inSettings ? settingsDraft.colors.heroTitleBold : SETTINGS.colors.heroTitleBold);
+    if (heroBold === undefined || heroBold === null) heroBold = true;
     var navActionsHTML = ''+
         (inSettings ? '<button id="home-btn" class="btn btn-ghost" type="button" style="background:#ffffff;">← Accueil</button>' : '')+
         authHeaderHTML()+
@@ -799,10 +808,29 @@
       '<div class="wrap"><div class="top-banner">'+
         '<img class="banner-photo" src="'+HERO_BANNER_SRC+'" alt="Bannière '+esc(brandText)+'">'+
         '<div class="banner-nav">'+
-          '<div class="brand"><img class="brand-mark" src="'+LOGO_SRC+'" alt="Mascotte '+esc(brandText)+'"><span'+ce(inSettings)+(inSettings?' data-settings-field="texts.brand" data-placeholder="Nom du site"':'')+'>'+esc(brandText)+'</span></div>'+
+          '<div class="brand">'+
+            '<span class="logo-wrap">'+
+              '<img class="brand-mark" src="'+logoSrc+'" alt="Mascotte '+esc(brandText)+'">'+
+              (inSettings ? '<button type="button" class="logo-photo-btn" id="logo-photo-btn" title="Changer l\'icône du site" aria-label="Changer l\'icône du site">📷</button><input type="file" accept="image/*" id="logo-photo-input" style="display:none;">' : '')+
+            '</span>'+
+            '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.brand" data-placeholder="Nom du site"':'')+'>'+esc(brandText)+'</span>'+
+            (inSettings ? '<button type="button" class="field-edit-btn" data-focus-settings-field="texts.brand" title="Modifier le titre du site" aria-label="Modifier le titre du site" style="background:#ffffff; border-radius:50%; padding:4px; opacity:1;">'+pencilIconSVG()+'</button>' : '')+
+          '</div>'+
         '</div>'+
-        '<div class="banner-title"><h1'+ce(inSettings)+(inSettings?' data-settings-field="texts.heroTitle"':'')+'>'+esc(heroText)+'</h1></div>'+
+        '<div class="banner-title"><h1'+ce(inSettings)+(inSettings?' data-settings-field="texts.heroTitle"':'')+' style="font-size:'+heroSizeMap[heroSizeKey]+'; font-weight:'+(heroBold?900:400)+';">'+esc(heroText)+'</h1></div>'+
       '</div>'+
+      (inSettings ? '<div class="wrap" style="display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; padding:10px 0 4px;">'+
+        '<button type="button" class="btn btn-ghost" data-focus-settings-field="texts.heroTitle" style="background:#ffffff; padding:7px 14px; font-size:0.8rem; display:inline-flex; align-items:center; gap:6px;">'+pencilIconSVG()+'<span>Titre principal</span></button>'+
+        '<button type="button" id="hero-bold-toggle" class="btn btn-ghost" style="background:#ffffff; padding:7px 14px; font-size:0.8rem; font-weight:'+(heroBold?'900':'400')+';'+(heroBold?' border-color:var(--sage); color:var(--sage-ink);':'')+'">Gras</button>'+
+        '<label style="display:inline-flex; align-items:center; gap:8px; background:#ffffff; border:1px solid var(--line); border-radius:999px; padding:7px 14px; font-size:0.8rem; cursor:pointer;">'+
+          '<span>Taille</span>'+
+          '<select id="hero-size-select" style="border:none; background:transparent; font-size:0.8rem; cursor:pointer;">'+
+            '<option value="sm"'+(heroSizeKey==='sm'?' selected':'')+'>Petit</option>'+
+            '<option value="md"'+(heroSizeKey==='md'?' selected':'')+'>Moyen</option>'+
+            '<option value="lg"'+(heroSizeKey==='lg'?' selected':'')+'>Grand</option>'+
+          '</select>'+
+        '</label>'+
+      '</div>' : '')+
       '<div class="banner-actions-row"><div class="header-actions">'+navActionsHTML+'</div></div>'+
       '</div>'
     :
@@ -1151,17 +1179,64 @@
     });
     var catAddBtn = document.getElementById('cat-add-btn');
     if (catAddBtn) catAddBtn.addEventListener('click', function(){
-      settingsDraft.categories.push({ key: 'cat_' + Date.now(), label: 'Nouvel onglet' });
+      settingsDraft.categories.push({ key: 'cat_' + Date.now(), label: 'Nouvel onglet', hidden: false });
       markSettingsDirty();
       render();
     });
-    root.querySelectorAll('[data-cat-remove-idx]').forEach(function(btn){
+    root.querySelectorAll('[data-cat-toggle-idx]').forEach(function(btn){
       btn.addEventListener('click', function(){
-        var idx = parseInt(btn.getAttribute('data-cat-remove-idx'), 10);
-        settingsDraft.categories.splice(idx, 1);
+        var idx = parseInt(btn.getAttribute('data-cat-toggle-idx'), 10);
+        settingsDraft.categories[idx].hidden = !settingsDraft.categories[idx].hidden;
         markSettingsDirty();
         render();
       });
+    });
+    root.querySelectorAll('[data-focus-settings-field]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var field = btn.getAttribute('data-focus-settings-field');
+        var target = root.querySelector('[data-settings-field="'+field+'"]');
+        if (target) target.focus();
+      });
+    });
+    var logoPhotoBtn = document.getElementById('logo-photo-btn');
+    if (logoPhotoBtn) logoPhotoBtn.addEventListener('click', function(){
+      var input = document.getElementById('logo-photo-input');
+      if (input) input.click();
+    });
+    var logoPhotoInput = document.getElementById('logo-photo-input');
+    if (logoPhotoInput) logoPhotoInput.addEventListener('change', function(){
+      var file = logoPhotoInput.files && logoPhotoInput.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e){
+        var img = new Image();
+        img.onload = function(){
+          var maxW = 240;
+          var scale = Math.min(1, maxW / img.width);
+          var canvas = document.createElement('canvas');
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          settingsDraft.colors.logoImage = canvas.toDataURL('image/jpeg', 0.85);
+          markSettingsDirty();
+          render();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+    var heroBoldToggle = document.getElementById('hero-bold-toggle');
+    if (heroBoldToggle) heroBoldToggle.addEventListener('click', function(){
+      settingsDraft.colors.heroTitleBold = !settingsDraft.colors.heroTitleBold;
+      markSettingsDirty();
+      render();
+    });
+    var heroSizeSelect = document.getElementById('hero-size-select');
+    if (heroSizeSelect) heroSizeSelect.addEventListener('change', function(){
+      settingsDraft.colors.heroTitleSize = heroSizeSelect.value;
+      markSettingsDirty();
+      render();
     });
     var bgImageInput = document.getElementById('bg-image-input');
     if (bgImageInput) bgImageInput.addEventListener('change', function(){
