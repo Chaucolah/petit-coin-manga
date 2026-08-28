@@ -410,7 +410,7 @@
   }
 
   function stylePopoverHTML(idPrefix, sizeKey, sizeOptions, bold, fontKey, color){
-    return '<div class="style-popover" style="position:absolute; top:64px; left:16px; z-index:30; background:#ffffff; border:1px solid var(--line); border-radius:14px; box-shadow:0 6px 22px rgba(0,0,0,0.2); padding:12px 14px; display:flex; flex-direction:column; gap:9px; width:216px;">'+
+    return '<div class="style-popover" style="position:absolute; top:100%; left:16px; margin-top:10px; z-index:30; background:#ffffff; border:1px solid var(--line); border-radius:14px; box-shadow:0 6px 22px rgba(0,0,0,0.2); padding:12px 14px; display:flex; flex-direction:column; gap:9px; width:216px;">'+
       '<div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">'+
         '<button type="button" id="'+idPrefix+'-bold-toggle" class="btn btn-ghost" title="Gras" aria-label="Gras" style="padding:5px 10px; font-size:0.72rem; font-weight:'+(bold?'900':'400')+';'+(bold?' border-color:var(--sage); color:var(--sage-ink);':'')+'">Gras</button>'+
         '<select id="'+idPrefix+'-size-select" title="Taille" style="border:1px solid var(--line); border-radius:999px; padding:5px 6px; font-size:0.72rem; cursor:pointer; background:#ffffff;">'+
