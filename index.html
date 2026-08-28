@@ -953,8 +953,8 @@
     var texte3LetterSpacing = (inSettings ? settingsDraft.colors.texte3LetterSpacing : SETTINGS.colors.texte3LetterSpacing) || 0;
     var texte3Text = inSettings ? settingsDraft.texts.texte3 : SETTINGS.texts.texte3;
     var texte3PopoverHTML = (inSettings && ui.texte3EditOpen) ? stylePopoverHTML('texte3', texte3SizeKey, [{value:'sm',label:'Petit'},{value:'md',label:'Moyen'},{value:'lg',label:'Grand'}], texte3Bold, texte3FontKey, texte3Color, 'top:100%; left:50%; margin-top:10px; transform:translateX(-50%);', 300) : '';
-    var texte3BlockHTML = '<div class="catalog-intro"><div style="position:relative; display:inline-block;">'+
-        '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.texte3" data-placeholder="Texte"':'')+' class="eyebrow catalog-eyebrow" style="font-size:'+texte3FontSize+'; font-weight:'+(texte3Bold?800:600)+';'+(texte3Color?' color:'+esc(texte3Color)+';':'')+' font-family:'+heroFontMap[texte3FontKey]+';'+(texte3LetterSpacing?' letter-spacing:'+texte3LetterSpacing+'px;':'')+' transform:translate('+texte3OffsetX+'px,'+texte3OffsetY+'px); margin-bottom:0;">'+esc(texte3Text)+'</span>'+
+    var texte3BlockHTML = '<div class="catalog-intro"><div id="texte3-title-wrap" style="position:relative; display:inline-block; transform:translate('+texte3OffsetX+'px,'+texte3OffsetY+'px);">'+
+        '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.texte3" data-placeholder="Texte"':'')+' class="eyebrow catalog-eyebrow" style="font-size:'+texte3FontSize+'; font-weight:'+(texte3Bold?800:600)+';'+(texte3Color?' color:'+esc(texte3Color)+';':'')+' font-family:'+heroFontMap[texte3FontKey]+';'+(texte3LetterSpacing?' letter-spacing:'+texte3LetterSpacing+'px;':'')+' margin-bottom:0;">'+esc(texte3Text)+'</span>'+
         (inSettings ? '<button type="button" class="field-edit-btn" id="texte3-edit-toggle-btn" title="Modifier ce texte" aria-label="Modifier ce texte" style="position:absolute; top:-8px; right:-8px; background:#ffffff; border-radius:50%; padding:4px; opacity:1; box-shadow:0 1px 5px rgba(0,0,0,0.2);">'+pencilIconSVG()+'</button>' : '')+
         (inSettings ? resizeHandleHTML('texte3') : '')+
         (inSettings ? moveHandleHTML('texte3') : '')+
@@ -976,17 +976,17 @@
               '<img class="brand-mark" src="'+logoSrc+'" alt="Mascotte '+esc(brandText)+'">'+
               (inSettings ? '<button type="button" class="logo-photo-btn" id="logo-photo-btn" title="Changer l\'icône du site" aria-label="Changer l\'icône du site">📷</button><input type="file" accept="image/*" id="logo-photo-input" style="display:none;">' : '')+
             '</span>'+
-            '<span style="position:relative; display:inline-block;">'+
-              '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.brand" data-placeholder="Nom du site"':'')+' style="font-size:'+brandFontSize+'; font-weight:'+(brandBold?800:500)+';'+(brandColor?' color:'+esc(brandColor)+';':'')+' font-family:'+heroFontMap[brandFontKey]+'; letter-spacing:'+brandLetterSpacing+'px; transform:translate('+brandOffsetX+'px,'+brandOffsetY+'px); display:inline-block;">'+esc(brandText)+'</span>'+
+            '<span id="brand-title-wrap" style="position:relative; display:inline-block; transform:translate('+brandOffsetX+'px,'+brandOffsetY+'px);">'+
+              '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.brand" data-placeholder="Nom du site"':'')+' style="font-size:'+brandFontSize+'; font-weight:'+(brandBold?800:500)+';'+(brandColor?' color:'+esc(brandColor)+';':'')+' font-family:'+heroFontMap[brandFontKey]+'; letter-spacing:'+brandLetterSpacing+'px; display:inline-block;">'+esc(brandText)+'</span>'+
               (inSettings ? resizeHandleHTML('brand') : '')+
               (inSettings ? moveHandleHTML('brand') : '')+
               (inSettings ? widthHandleHTML('brand') : '')+
+              (inSettings ? '<button type="button" class="field-edit-btn" id="brand-edit-toggle-btn" title="Modifier le titre du site" aria-label="Modifier le titre du site" style="position:absolute; top:-8px; right:-8px; background:#ffffff; border-radius:50%; padding:4px; opacity:1; box-shadow:0 1px 5px rgba(0,0,0,0.2);">'+pencilIconSVG()+'</button>' : '')+
             '</span>'+
-            (inSettings ? '<button type="button" class="field-edit-btn" id="brand-edit-toggle-btn" title="Modifier le titre du site" aria-label="Modifier le titre du site" style="background:#ffffff; border-radius:50%; padding:4px; opacity:1;">'+pencilIconSVG()+'</button>' : '')+
           '</div>'+
         '</div>'+
-        '<div class="banner-title"><div style="position:relative;">'+
-          '<h1'+ce(inSettings)+(inSettings?' data-settings-field="texts.heroTitle"':'')+' style="font-size:'+heroFontSize+'; font-weight:'+(heroBold?900:400)+';'+(heroColor?' color:'+esc(heroColor)+';':'')+' font-family:'+heroFontMap[heroFontKey]+'; letter-spacing:'+heroLetterSpacing+'px; transform:translate('+heroOffsetX+'px,'+heroOffsetY+'px);">'+esc(heroText)+'</h1>'+
+        '<div class="banner-title"><div id="hero-title-wrap" style="position:relative; transform:translate('+heroOffsetX+'px,'+heroOffsetY+'px);">'+
+          '<h1'+ce(inSettings)+(inSettings?' data-settings-field="texts.heroTitle"':'')+' style="font-size:'+heroFontSize+'; font-weight:'+(heroBold?900:400)+';'+(heroColor?' color:'+esc(heroColor)+';':'')+' font-family:'+heroFontMap[heroFontKey]+'; letter-spacing:'+heroLetterSpacing+'px;">'+esc(heroText)+'</h1>'+
           (inSettings ? '<button type="button" class="field-edit-btn" id="hero-edit-toggle-btn" title="Modifier le titre principal" aria-label="Modifier le titre principal" style="position:absolute; top:-6px; right:-6px; background:#ffffff; border-radius:50%; padding:4px; opacity:1; box-shadow:0 1px 5px rgba(0,0,0,0.2);">'+pencilIconSVG()+'</button>' : '')+
           (inSettings ? resizeHandleHTML('hero') : '')+
           (inSettings ? moveHandleHTML('hero') : '')+
@@ -1459,7 +1459,7 @@
     if (heroMoveHandle) heroMoveHandle.addEventListener('pointerdown', function(e){
       e.preventDefault();
       e.stopPropagation();
-      var target = root.querySelector('.banner-title h1');
+      var target = document.getElementById('hero-title-wrap');
       if (!target) return;
       heroMoveHandle.setPointerCapture(e.pointerId);
       var startX = e.clientX, startY = e.clientY;
@@ -1583,7 +1583,7 @@
     if (brandMoveHandle) brandMoveHandle.addEventListener('pointerdown', function(e){
       e.preventDefault();
       e.stopPropagation();
-      var target = root.querySelector('.banner-nav .brand span[data-settings-field="texts.brand"]');
+      var target = document.getElementById('brand-title-wrap');
       if (!target) return;
       brandMoveHandle.setPointerCapture(e.pointerId);
       var startX = e.clientX, startY = e.clientY;
@@ -1746,7 +1746,7 @@
     if (texte3MoveHandle) texte3MoveHandle.addEventListener('pointerdown', function(e){
       e.preventDefault();
       e.stopPropagation();
-      var target = root.querySelector('.catalog-intro span[data-settings-field="texts.texte3"]');
+      var target = document.getElementById('texte3-title-wrap');
       if (!target) return;
       texte3MoveHandle.setPointerCapture(e.pointerId);
       var startX = e.clientX, startY = e.clientY;
