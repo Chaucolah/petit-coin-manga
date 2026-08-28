@@ -502,10 +502,13 @@
   function categoryBadge(it){
     var tokens = (it.cat || '').split(/\s+/);
     var cats = SETTINGS.categories || [];
+    var promoLabel = '';
     for (var k = 0; k < cats.length; k++){
-      if (tokens.indexOf(cats[k].key) !== -1) return cats[k].label;
+      if (tokens.indexOf(cats[k].key) === -1) continue;
+      if (cats[k].key === 'promo'){ promoLabel = cats[k].label; continue; }
+      return cats[k].label;
     }
-    return '';
+    return promoLabel;
   }
 
   function cardHTML(it, i, forSeller, forSettings){
