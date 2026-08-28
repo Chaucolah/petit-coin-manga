@@ -103,7 +103,16 @@
   .banner-nav{position:absolute; top:0; left:0; right:0; display:flex; align-items:center; justify-content:flex-start; padding:26px 24px 16px 34px; z-index:2;}
   .banner-nav .brand{text-shadow:0 1px 4px rgba(255,255,255,0.9), 0 1px 12px rgba(255,255,255,0.6);}
   .banner-nav .brand-mark{width:40px; height:40px; box-shadow:0 2px 8px rgba(0,0,0,0.25), 0 0 0 2px #fff;}
-  .banner-actions-row{display:flex; justify-content:flex-end; padding:12px 0 4px;}
+  .banner-actions-row{display:flex; justify-content:flex-end; padding:12px 0 4px; position:relative; gap:8px;}
+  .header-actions #home-btn{padding:8px 14px; font-size:0.88rem; font-weight:600;}
+  .cart-pill, .edit-toggle, .header-contact-link:not(.active), .header-actions #home-btn{
+    background:var(--nav-btn-bg, var(--surface));
+    color:var(--nav-btn-text, var(--ink));
+    border-color:var(--nav-btn-bg, var(--line));
+  }
+  .nav-btn-edit-btn{position:absolute; top:-2px; right:0; width:26px; height:26px; border-radius:50%; border:1px solid var(--line); background:#ffffff; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; color:var(--ink-soft); z-index:20;}
+  .move-handle{position:absolute; top:-9px; left:-9px; width:15px; height:15px; border-radius:50%; background:#ffffff; border:2px solid var(--sage); box-shadow:0 1px 4px rgba(0,0,0,0.35); cursor:move; z-index:6; touch-action:none; display:flex; align-items:center; justify-content:center; font-size:8px; color:var(--sage);}
+  .width-handle{position:absolute; top:50%; right:-9px; margin-top:-7px; width:15px; height:15px; border-radius:50%; background:var(--gold); border:2px solid #ffffff; box-shadow:0 1px 4px rgba(0,0,0,0.35); cursor:ew-resize; z-index:6; touch-action:none;}
   .banner-title{position:absolute; left:28px; right:44%; bottom:22px; z-index:2;}
   .banner-title h1{font-size:clamp(2rem, 5vw, 3.6rem); font-weight:900; line-height:1.05; margin:0; color:#2c2a22; text-shadow:0 1px 3px rgba(255,255,255,0.85), 0 2px 20px rgba(255,255,255,0.7), 0 2px 20px rgba(255,255,255,0.7);}
   @media (max-width:640px){
@@ -252,7 +261,7 @@
   var STATE = JSON.parse(document.getElementById('state-data').textContent);
   var OWNER_EMAIL = 'marie-lam-21@hotmail.fr';
   var DEFAULT_SETTINGS = {
-    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false, logoImage:'', heroTitleSize:'md', heroTitleBold:true, heroTitleColor:'', heroTitleFont:'', heroTitleCustomPx:'', brandSize:'md', brandBold:true, brandColor:'', brandFont:'', brandCustomPx:'' },
+    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false, logoImage:'', heroTitleSize:'md', heroTitleBold:true, heroTitleColor:'', heroTitleFont:'', heroTitleCustomPx:'', brandSize:'md', brandBold:true, brandColor:'', brandFont:'', brandCustomPx:'', navBtnBg:'', navBtnText:'', heroTitleOffsetX:0, heroTitleOffsetY:0, heroTitleLetterSpacing:0, brandOffsetX:0, brandOffsetY:0, brandLetterSpacing:0 },
     texts: { brand:'Petit Coin Manga', heroTitle:'Des mangas et objets geek qui méritent une nouvelle étagère.', contactEmail:'contact@petitcoinmanga.fr', footerCopy:'© 2026 Petit Coin Manga' },
     categories: [{key:'shonen', label:'Shônen', hidden:false}, {key:'seinen', label:'Seinen', hidden:false}, {key:'goodies', label:'Goodies', hidden:false}, {key:'promo', label:'En promo', hidden:false}]
   };
@@ -361,7 +370,7 @@
       });
   }
 
-  var ui = { view: 'boutique', filter: 'all', editingIdx: null, ficheModalOpen: false, cart: [], dirty: false, status: '', contactState: 'idle', colorEditIdx: null, heroEditOpen: false, brandEditOpen: false,
+  var ui = { view: 'boutique', filter: 'all', editingIdx: null, ficheModalOpen: false, cart: [], dirty: false, status: '', contactState: 'idle', colorEditIdx: null, heroEditOpen: false, brandEditOpen: false, navBtnEditOpen: false,
     auth: { session: null, mode: 'signup', status: '', busy: false, open: false } };
   var PRESET_HUES = ['#6e9083', '#d9bdf0', '#b1852f', '#0de0c4', '#ff2996', '#e3c3bd', '#2c2a2e', '#3d6bd9', '#e63946', '#f3722c', '#f9c74f', '#90be6d', '#43aa8b', '#577590', '#9d4edd', '#f28482', '#7f5539', '#adb5bd'];
   var root = document.getElementById('root');
@@ -433,6 +442,32 @@
         '<input type="color" class="palette-custom" id="'+idPrefix+'-color-custom" value="'+(color && color.charAt(0)==='#' ? color : '#2c2a22')+'" style="width:20px; height:20px;">'+
       '</div>'+
       '<button type="button" id="'+idPrefix+'-edit-confirm-btn" class="btn btn-primary" title="Valider" aria-label="Valider" style="align-self:flex-end; margin-top:-5px; padding:0; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; line-height:1;">✓</button>'+
+    '</div>';
+  }
+
+  function moveHandleHTML(idPrefix){
+    return '<span class="move-handle" id="'+idPrefix+'-move-handle" title="Glisser pour déplacer" aria-label="Déplacer">✥</span>';
+  }
+
+  function widthHandleHTML(idPrefix){
+    return '<span class="width-handle" id="'+idPrefix+'-width-handle" title="Glisser pour changer la largeur (espacement des lettres)" aria-label="Changer la largeur"></span>';
+  }
+
+  function navButtonsPopoverHTML(navBtnBg, navBtnText){
+    return '<div class="style-popover" style="position:absolute; top:100%; right:0; margin-top:10px; z-index:30; background:#ffffff; border:1px solid var(--line); border-radius:14px; box-shadow:0 6px 22px rgba(0,0,0,0.2); padding:12px 14px; display:flex; flex-direction:column; gap:9px; width:236px;">'+
+      '<div style="font-size:0.72rem; font-weight:700; color:var(--ink-soft);">Fond des boutons</div>'+
+      '<div class="card-color-palette" style="padding-top:0; gap:5px;">'+
+        '<button type="button" class="palette-swatch'+(!navBtnBg?' active':'')+'" data-navbtn-bg-val="" style="background:#ffffff; border:1px dashed var(--line); width:17px; height:17px;" title="Défaut" aria-label="Couleur par défaut"></button>'+
+        PRESET_HUES.map(function(h){ return '<button type="button" class="palette-swatch'+(navBtnBg===h?' active':'')+'" data-navbtn-bg-val="'+h+'" style="background:'+h+'; width:17px; height:17px;" aria-label="Choisir cette couleur"></button>'; }).join('')+
+        '<input type="color" class="palette-custom" id="navbtn-bg-custom" value="'+(navBtnBg && navBtnBg.charAt(0)==='#' ? navBtnBg : '#ffffff')+'" style="width:20px; height:20px;">'+
+      '</div>'+
+      '<div style="font-size:0.72rem; font-weight:700; color:var(--ink-soft);">Texte des boutons</div>'+
+      '<div class="card-color-palette" style="padding-top:0; gap:5px;">'+
+        '<button type="button" class="palette-swatch'+(!navBtnText?' active':'')+'" data-navbtn-text-val="" style="background:#ffffff; border:1px dashed var(--line); width:17px; height:17px;" title="Défaut" aria-label="Couleur par défaut"></button>'+
+        PRESET_HUES.map(function(h){ return '<button type="button" class="palette-swatch'+(navBtnText===h?' active':'')+'" data-navbtn-text-val="'+h+'" style="background:'+h+'; width:17px; height:17px;" aria-label="Choisir cette couleur"></button>'; }).join('')+
+        '<input type="color" class="palette-custom" id="navbtn-text-custom" value="'+(navBtnText && navBtnText.charAt(0)==='#' ? navBtnText : '#2c2a2e') +'" style="width:20px; height:20px;">'+
+      '</div>'+
+      '<button type="button" id="navbtn-edit-confirm-btn" class="btn btn-primary" title="Valider" aria-label="Valider" style="align-self:flex-end; margin-top:-5px; padding:0; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; line-height:1;">✓</button>'+
     '</div>';
   }
 
@@ -842,10 +877,21 @@
     var brandColor = (inSettings ? settingsDraft.colors.brandColor : SETTINGS.colors.brandColor) || '';
     var brandCustomPx = (inSettings ? settingsDraft.colors.brandCustomPx : SETTINGS.colors.brandCustomPx) || '';
     var brandFontSize = brandCustomPx || brandSizeMap[brandSizeKey];
+    var heroOffsetX = (inSettings ? settingsDraft.colors.heroTitleOffsetX : SETTINGS.colors.heroTitleOffsetX) || 0;
+    var heroOffsetY = (inSettings ? settingsDraft.colors.heroTitleOffsetY : SETTINGS.colors.heroTitleOffsetY) || 0;
+    var heroLetterSpacing = (inSettings ? settingsDraft.colors.heroTitleLetterSpacing : SETTINGS.colors.heroTitleLetterSpacing) || 0;
+    var brandOffsetX = (inSettings ? settingsDraft.colors.brandOffsetX : SETTINGS.colors.brandOffsetX) || 0;
+    var brandOffsetY = (inSettings ? settingsDraft.colors.brandOffsetY : SETTINGS.colors.brandOffsetY) || 0;
+    var brandLetterSpacing = (inSettings ? settingsDraft.colors.brandLetterSpacing : SETTINGS.colors.brandLetterSpacing) || 0;
+    var navBtnBg = (inSettings ? settingsDraft.colors.navBtnBg : SETTINGS.colors.navBtnBg) || '';
+    var navBtnText = (inSettings ? settingsDraft.colors.navBtnText : SETTINGS.colors.navBtnText) || '';
+    if (navBtnBg) document.documentElement.style.setProperty('--nav-btn-bg', navBtnBg); else document.documentElement.style.removeProperty('--nav-btn-bg');
+    if (navBtnText) document.documentElement.style.setProperty('--nav-btn-text', navBtnText); else document.documentElement.style.removeProperty('--nav-btn-text');
     var heroPopoverHTML = (inSettings && ui.heroEditOpen) ? stylePopoverHTML('hero', heroSizeKey, [{value:'sm',label:'Petit'},{value:'md',label:'Moyen'},{value:'lg',label:'Grand'}], heroBold, heroFontKey, heroColor, 'top:100%; left:16px; margin-top:10px;') : '';
     var brandPopoverHTML = (inSettings && ui.brandEditOpen) ? stylePopoverHTML('brand', brandSizeKey, [{value:'sm',label:'Petit'},{value:'md',label:'Moyen'},{value:'lg',label:'Grand'}], brandBold, brandFontKey, brandColor, 'top:74px; left:16px;', 320) : '';
+    var navBtnPopoverHTML = (inSettings && ui.navBtnEditOpen) ? navButtonsPopoverHTML(navBtnBg, navBtnText) : '';
     var navActionsHTML = ''+
-        (inSettings ? '<button id="home-btn" class="btn btn-ghost" type="button" style="background:#ffffff;">← Accueil</button>' : '')+
+        (inSettings ? '<button id="home-btn" class="btn btn-ghost" type="button">← Accueil</button>' : '')+
         authHeaderHTML()+
         '<a data-view="contact" class="header-contact-link'+(ui.view==='contact'?' active':'')+'">Contact</a>'+
         '<button class="cart-pill" type="button" id="cart-pill-btn">🛍️ Panier · '+ui.cart.length+'</button>';
@@ -860,21 +906,29 @@
               (inSettings ? '<button type="button" class="logo-photo-btn" id="logo-photo-btn" title="Changer l\'icône du site" aria-label="Changer l\'icône du site">📷</button><input type="file" accept="image/*" id="logo-photo-input" style="display:none;">' : '')+
             '</span>'+
             '<span style="position:relative; display:inline-block;">'+
-              '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.brand" data-placeholder="Nom du site"':'')+' style="font-size:'+brandFontSize+'; font-weight:'+(brandBold?800:500)+';'+(brandColor?' color:'+esc(brandColor)+';':'')+' font-family:'+heroFontMap[brandFontKey]+';">'+esc(brandText)+'</span>'+
+              '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.brand" data-placeholder="Nom du site"':'')+' style="font-size:'+brandFontSize+'; font-weight:'+(brandBold?800:500)+';'+(brandColor?' color:'+esc(brandColor)+';':'')+' font-family:'+heroFontMap[brandFontKey]+'; letter-spacing:'+brandLetterSpacing+'px; transform:translate('+brandOffsetX+'px,'+brandOffsetY+'px); display:inline-block;">'+esc(brandText)+'</span>'+
               (inSettings ? resizeHandleHTML('brand') : '')+
+              (inSettings ? moveHandleHTML('brand') : '')+
+              (inSettings ? widthHandleHTML('brand') : '')+
             '</span>'+
             (inSettings ? '<button type="button" class="field-edit-btn" id="brand-edit-toggle-btn" title="Modifier le titre du site" aria-label="Modifier le titre du site" style="background:#ffffff; border-radius:50%; padding:4px; opacity:1;">'+pencilIconSVG()+'</button>' : '')+
           '</div>'+
         '</div>'+
         '<div class="banner-title"><div style="position:relative;">'+
-          '<h1'+ce(inSettings)+(inSettings?' data-settings-field="texts.heroTitle"':'')+' style="font-size:'+heroFontSize+'; font-weight:'+(heroBold?900:400)+';'+(heroColor?' color:'+esc(heroColor)+';':'')+' font-family:'+heroFontMap[heroFontKey]+';">'+esc(heroText)+'</h1>'+
+          '<h1'+ce(inSettings)+(inSettings?' data-settings-field="texts.heroTitle"':'')+' style="font-size:'+heroFontSize+'; font-weight:'+(heroBold?900:400)+';'+(heroColor?' color:'+esc(heroColor)+';':'')+' font-family:'+heroFontMap[heroFontKey]+'; letter-spacing:'+heroLetterSpacing+'px; transform:translate('+heroOffsetX+'px,'+heroOffsetY+'px);">'+esc(heroText)+'</h1>'+
           (inSettings ? '<button type="button" class="field-edit-btn" id="hero-edit-toggle-btn" title="Modifier le titre principal" aria-label="Modifier le titre principal" style="position:absolute; top:-6px; right:-6px; background:#ffffff; border-radius:50%; padding:4px; opacity:1; box-shadow:0 1px 5px rgba(0,0,0,0.2);">'+pencilIconSVG()+'</button>' : '')+
           (inSettings ? resizeHandleHTML('hero') : '')+
+          (inSettings ? moveHandleHTML('hero') : '')+
+          (inSettings ? widthHandleHTML('hero') : '')+
         '</div></div>'+
       '</div>'+
       heroPopoverHTML+brandPopoverHTML+
       '</div>'+
-      '<div class="banner-actions-row"><div class="header-actions">'+navActionsHTML+'</div></div>'+
+      '<div class="banner-actions-row">'+
+        '<div class="header-actions">'+navActionsHTML+'</div>'+
+        (inSettings ? '<button type="button" class="nav-btn-edit-btn" id="navbtn-edit-toggle-btn" title="Personnaliser les boutons" aria-label="Personnaliser les boutons">'+pencilIconSVG()+'</button>' : '')+
+        navBtnPopoverHTML+
+      '</div>'+
       '</div>'
     :
       '<header class="site"><div class="site-inner">'+
@@ -1307,6 +1361,59 @@
       heroResizeHandle.addEventListener('pointermove', onMove);
       heroResizeHandle.addEventListener('pointerup', onUp);
     });
+    var heroMoveHandle = document.getElementById('hero-move-handle');
+    if (heroMoveHandle) heroMoveHandle.addEventListener('pointerdown', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var target = root.querySelector('.banner-title h1');
+      if (!target) return;
+      heroMoveHandle.setPointerCapture(e.pointerId);
+      var startX = e.clientX, startY = e.clientY;
+      var startOffX = settingsDraft.colors.heroTitleOffsetX || 0;
+      var startOffY = settingsDraft.colors.heroTitleOffsetY || 0;
+      function onMove(ev){
+        var nx = startOffX + (ev.clientX - startX);
+        var ny = startOffY + (ev.clientY - startY);
+        target.style.transform = 'translate('+nx+'px,'+ny+'px)';
+      }
+      function onUp(ev){
+        heroMoveHandle.removeEventListener('pointermove', onMove);
+        heroMoveHandle.removeEventListener('pointerup', onUp);
+        var nx = startOffX + (ev.clientX - startX);
+        var ny = startOffY + (ev.clientY - startY);
+        settingsDraft.colors.heroTitleOffsetX = Math.round(nx);
+        settingsDraft.colors.heroTitleOffsetY = Math.round(ny);
+        markSettingsDirty();
+        render();
+      }
+      heroMoveHandle.addEventListener('pointermove', onMove);
+      heroMoveHandle.addEventListener('pointerup', onUp);
+    });
+    var heroWidthHandle = document.getElementById('hero-width-handle');
+    if (heroWidthHandle) heroWidthHandle.addEventListener('pointerdown', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var target = root.querySelector('.banner-title h1');
+      if (!target) return;
+      heroWidthHandle.setPointerCapture(e.pointerId);
+      var startX = e.clientX;
+      var startSpacing = settingsDraft.colors.heroTitleLetterSpacing || 0;
+      function onMove(ev){
+        var delta = (ev.clientX - startX) / 12;
+        var ns = Math.max(-3, Math.min(40, startSpacing + delta));
+        target.style.letterSpacing = ns.toFixed(1) + 'px';
+      }
+      function onUp(ev){
+        heroWidthHandle.removeEventListener('pointermove', onMove);
+        heroWidthHandle.removeEventListener('pointerup', onUp);
+        var finalSpacing = parseFloat(target.style.letterSpacing) || 0;
+        settingsDraft.colors.heroTitleLetterSpacing = finalSpacing;
+        markSettingsDirty();
+        render();
+      }
+      heroWidthHandle.addEventListener('pointermove', onMove);
+      heroWidthHandle.addEventListener('pointerup', onUp);
+    });
     var heroFontSelect = document.getElementById('hero-font-select');
     if (heroFontSelect) heroFontSelect.addEventListener('change', function(){
       settingsDraft.colors.heroTitleFont = heroFontSelect.value;
@@ -1376,6 +1483,59 @@
       brandResizeHandle.addEventListener('pointermove', onMove);
       brandResizeHandle.addEventListener('pointerup', onUp);
     });
+    var brandMoveHandle = document.getElementById('brand-move-handle');
+    if (brandMoveHandle) brandMoveHandle.addEventListener('pointerdown', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var target = root.querySelector('.banner-nav .brand span[data-settings-field="texts.brand"]');
+      if (!target) return;
+      brandMoveHandle.setPointerCapture(e.pointerId);
+      var startX = e.clientX, startY = e.clientY;
+      var startOffX = settingsDraft.colors.brandOffsetX || 0;
+      var startOffY = settingsDraft.colors.brandOffsetY || 0;
+      function onMove(ev){
+        var nx = startOffX + (ev.clientX - startX);
+        var ny = startOffY + (ev.clientY - startY);
+        target.style.transform = 'translate('+nx+'px,'+ny+'px)';
+      }
+      function onUp(ev){
+        brandMoveHandle.removeEventListener('pointermove', onMove);
+        brandMoveHandle.removeEventListener('pointerup', onUp);
+        var nx = startOffX + (ev.clientX - startX);
+        var ny = startOffY + (ev.clientY - startY);
+        settingsDraft.colors.brandOffsetX = Math.round(nx);
+        settingsDraft.colors.brandOffsetY = Math.round(ny);
+        markSettingsDirty();
+        render();
+      }
+      brandMoveHandle.addEventListener('pointermove', onMove);
+      brandMoveHandle.addEventListener('pointerup', onUp);
+    });
+    var brandWidthHandle = document.getElementById('brand-width-handle');
+    if (brandWidthHandle) brandWidthHandle.addEventListener('pointerdown', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var target = root.querySelector('.banner-nav .brand span[data-settings-field="texts.brand"]');
+      if (!target) return;
+      brandWidthHandle.setPointerCapture(e.pointerId);
+      var startX = e.clientX;
+      var startSpacing = settingsDraft.colors.brandLetterSpacing || 0;
+      function onMove(ev){
+        var delta = (ev.clientX - startX) / 12;
+        var ns = Math.max(-2, Math.min(24, startSpacing + delta));
+        target.style.letterSpacing = ns.toFixed(1) + 'px';
+      }
+      function onUp(ev){
+        brandWidthHandle.removeEventListener('pointermove', onMove);
+        brandWidthHandle.removeEventListener('pointerup', onUp);
+        var finalSpacing = parseFloat(target.style.letterSpacing) || 0;
+        settingsDraft.colors.brandLetterSpacing = finalSpacing;
+        markSettingsDirty();
+        render();
+      }
+      brandWidthHandle.addEventListener('pointermove', onMove);
+      brandWidthHandle.addEventListener('pointerup', onUp);
+    });
     var brandFontSelect = document.getElementById('brand-font-select');
     if (brandFontSelect) brandFontSelect.addEventListener('change', function(){
       settingsDraft.colors.brandFont = brandFontSelect.value;
@@ -1406,6 +1566,44 @@
       markSettingsDirty();
       var brandSpan = root.querySelector('.banner-nav .brand span[data-settings-field="texts.brand"]');
       if (brandSpan) brandSpan.style.color = brandColorCustom.value;
+    });
+    var navBtnEditToggleBtn = document.getElementById('navbtn-edit-toggle-btn');
+    if (navBtnEditToggleBtn) navBtnEditToggleBtn.addEventListener('click', function(){
+      ui.navBtnEditOpen = !ui.navBtnEditOpen;
+      ui.heroEditOpen = false;
+      ui.brandEditOpen = false;
+      render();
+    });
+    var navBtnEditConfirmBtn = document.getElementById('navbtn-edit-confirm-btn');
+    if (navBtnEditConfirmBtn) navBtnEditConfirmBtn.addEventListener('click', function(){
+      ui.navBtnEditOpen = false;
+      render();
+    });
+    root.querySelectorAll('[data-navbtn-bg-val]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        settingsDraft.colors.navBtnBg = btn.getAttribute('data-navbtn-bg-val');
+        markSettingsDirty();
+        render();
+      });
+    });
+    var navBtnBgCustom = document.getElementById('navbtn-bg-custom');
+    if (navBtnBgCustom) navBtnBgCustom.addEventListener('input', function(){
+      settingsDraft.colors.navBtnBg = navBtnBgCustom.value;
+      markSettingsDirty();
+      document.documentElement.style.setProperty('--nav-btn-bg', navBtnBgCustom.value);
+    });
+    root.querySelectorAll('[data-navbtn-text-val]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        settingsDraft.colors.navBtnText = btn.getAttribute('data-navbtn-text-val');
+        markSettingsDirty();
+        render();
+      });
+    });
+    var navBtnTextCustom = document.getElementById('navbtn-text-custom');
+    if (navBtnTextCustom) navBtnTextCustom.addEventListener('input', function(){
+      settingsDraft.colors.navBtnText = navBtnTextCustom.value;
+      markSettingsDirty();
+      document.documentElement.style.setProperty('--nav-btn-text', navBtnTextCustom.value);
     });
     var bgImageInput = document.getElementById('bg-image-input');
     if (bgImageInput) bgImageInput.addEventListener('change', function(){
