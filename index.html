@@ -96,8 +96,8 @@
   .hero-inner{display:grid; grid-template-columns:1fr; gap:40px; align-items:center; text-align:center;}
   .hero-inner .hero-actions{justify-content:center;}
   .eyebrow{display:inline-flex; align-items:center; gap:8px; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--sage-ink); background:color-mix(in srgb, var(--sage) 16%, transparent); border-radius:999px; padding:6px 12px; margin-bottom:18px;}
-  .eyebrow.catalog-eyebrow{font-size:0.85rem; padding:10px 20px; font-weight:700; box-shadow:0 3px 12px rgba(0,0,0,0.08);}
-  .catalog-intro{position:relative; text-align:center; margin:36px auto 42px; max-width:560px; background:#ffffff; border:1px solid var(--line); border-radius:20px; padding:24px 28px; box-shadow:0 6px 22px rgba(0,0,0,0.12);}
+  .eyebrow.catalog-eyebrow{font-size:0.85rem; padding:0; font-weight:700; background:transparent; box-shadow:none; border-radius:0;}
+  .catalog-intro{position:relative; text-align:center; width:100%; margin:36px 0 42px; background:#ffffff; border:1px solid var(--line); border-radius:20px; padding:44px 32px; box-shadow:0 6px 22px rgba(0,0,0,0.12);}
   .catalog-sell-row{display:flex; justify-content:center; margin-top:44px;}
   .hero h1{font-size:clamp(2.1rem, 4.4vw, 3.2rem); margin:0 0 16px; line-height:1.08; font-weight:800; letter-spacing:-0.015em;}
   .hero p.lead{color:var(--ink-soft); font-size:1.05rem; max-width:46ch; margin:0 0 26px;}
@@ -272,7 +272,7 @@
   var STATE = JSON.parse(document.getElementById('state-data').textContent);
   var OWNER_EMAIL = 'marie-lam-21@hotmail.fr';
   var DEFAULT_SETTINGS = {
-    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false, logoImage:'', heroTitleSize:'md', heroTitleBold:true, heroTitleColor:'', heroTitleFont:'', heroTitleCustomPx:'', brandSize:'md', brandBold:true, brandColor:'', brandFont:'', brandCustomPx:'', navBtnBg:'', navBtnText:'', heroTitleOffsetX:0, heroTitleOffsetY:0, heroTitleLetterSpacing:0, brandOffsetX:0, brandOffsetY:0, brandLetterSpacing:0, texte3Size:'md', texte3Bold:true, texte3Color:'', texte3Font:'', texte3CustomPx:'', texte3OffsetX:0, texte3OffsetY:0, texte3LetterSpacing:0 },
+    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false, logoImage:'', heroTitleSize:'md', heroTitleBold:true, heroTitleColor:'', heroTitleFont:'', heroTitleCustomPx:'', brandSize:'md', brandBold:true, brandColor:'', brandFont:'', brandCustomPx:'', navBtnBg:'', navBtnText:'', heroTitleOffsetX:0, heroTitleOffsetY:0, heroTitleBoxWidth:'', brandOffsetX:0, brandOffsetY:0, brandBoxWidth:'', texte3Size:'md', texte3Bold:true, texte3Color:'', texte3Font:'', texte3CustomPx:'', texte3OffsetX:0, texte3OffsetY:0, texte3BoxWidth:'' },
     texts: { brand:'Petit Coin Manga', heroTitle:'Des mangas et objets geek qui méritent une nouvelle étagère.', texte3:'Seconde vie pour vos mangas', contactEmail:'contact@petitcoinmanga.fr', footerCopy:'© 2026 Petit Coin Manga' },
     categories: [{key:'shonen', label:'Shônen', hidden:false}, {key:'seinen', label:'Seinen', hidden:false}, {key:'goodies', label:'Goodies', hidden:false}, {key:'promo', label:'En promo', hidden:false}]
   };
@@ -478,7 +478,7 @@
   }
 
   function widthHandleHTML(idPrefix){
-    return '<span class="width-handle" id="'+idPrefix+'-width-handle" title="Glisser pour changer la largeur (espacement des lettres)" aria-label="Changer la largeur"></span>';
+    return '<span class="width-handle" id="'+idPrefix+'-width-handle" title="Glisser pour changer la largeur de la zone" aria-label="Changer la largeur de la zone"></span>';
   }
 
   function navButtonsPopoverHTML(navBtnBg, navBtnText){
@@ -927,10 +927,10 @@
     var brandFontSize = brandCustomPx || brandSizeMap[brandSizeKey];
     var heroOffsetX = (inSettings ? settingsDraft.colors.heroTitleOffsetX : SETTINGS.colors.heroTitleOffsetX) || 0;
     var heroOffsetY = (inSettings ? settingsDraft.colors.heroTitleOffsetY : SETTINGS.colors.heroTitleOffsetY) || 0;
-    var heroLetterSpacing = (inSettings ? settingsDraft.colors.heroTitleLetterSpacing : SETTINGS.colors.heroTitleLetterSpacing) || 0;
+    var heroBoxWidth = (inSettings ? settingsDraft.colors.heroTitleBoxWidth : SETTINGS.colors.heroTitleBoxWidth) || '';
     var brandOffsetX = (inSettings ? settingsDraft.colors.brandOffsetX : SETTINGS.colors.brandOffsetX) || 0;
     var brandOffsetY = (inSettings ? settingsDraft.colors.brandOffsetY : SETTINGS.colors.brandOffsetY) || 0;
-    var brandLetterSpacing = (inSettings ? settingsDraft.colors.brandLetterSpacing : SETTINGS.colors.brandLetterSpacing) || 0;
+    var brandBoxWidth = (inSettings ? settingsDraft.colors.brandBoxWidth : SETTINGS.colors.brandBoxWidth) || '';
     var navBtnBg = (inSettings ? settingsDraft.colors.navBtnBg : SETTINGS.colors.navBtnBg) || '';
     var navBtnText = (inSettings ? settingsDraft.colors.navBtnText : SETTINGS.colors.navBtnText) || '';
     if (navBtnBg) document.documentElement.style.setProperty('--nav-btn-bg', navBtnBg); else document.documentElement.style.removeProperty('--nav-btn-bg');
@@ -950,11 +950,11 @@
     var texte3FontSize = texte3CustomPx || texte3SizeMap[texte3SizeKey];
     var texte3OffsetX = (inSettings ? settingsDraft.colors.texte3OffsetX : SETTINGS.colors.texte3OffsetX) || 0;
     var texte3OffsetY = (inSettings ? settingsDraft.colors.texte3OffsetY : SETTINGS.colors.texte3OffsetY) || 0;
-    var texte3LetterSpacing = (inSettings ? settingsDraft.colors.texte3LetterSpacing : SETTINGS.colors.texte3LetterSpacing) || 0;
+    var texte3BoxWidth = (inSettings ? settingsDraft.colors.texte3BoxWidth : SETTINGS.colors.texte3BoxWidth) || '';
     var texte3Text = inSettings ? settingsDraft.texts.texte3 : SETTINGS.texts.texte3;
     var texte3PopoverHTML = (inSettings && ui.texte3EditOpen) ? stylePopoverHTML('texte3', texte3SizeKey, [{value:'sm',label:'Petit'},{value:'md',label:'Moyen'},{value:'lg',label:'Grand'}], texte3Bold, texte3FontKey, texte3Color, 'top:100%; left:50%; margin-top:10px; transform:translateX(-50%);', 300) : '';
-    var texte3BlockHTML = '<div class="catalog-intro"><div id="texte3-title-wrap" style="position:relative; display:inline-block; transform:translate('+texte3OffsetX+'px,'+texte3OffsetY+'px);">'+
-        '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.texte3" data-placeholder="Texte"':'')+' class="eyebrow catalog-eyebrow" style="font-size:'+texte3FontSize+'; font-weight:'+(texte3Bold?800:600)+';'+(texte3Color?' color:'+esc(texte3Color)+';':'')+' font-family:'+heroFontMap[texte3FontKey]+';'+(texte3LetterSpacing?' letter-spacing:'+texte3LetterSpacing+'px;':'')+' margin-bottom:0;">'+esc(texte3Text)+'</span>'+
+    var texte3BlockHTML = '<div class="catalog-intro"><div id="texte3-title-wrap" style="position:relative; display:inline-block;'+(texte3BoxWidth?' width:'+texte3BoxWidth+';':'')+' transform:translate('+texte3OffsetX+'px,'+texte3OffsetY+'px);">'+
+        '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.texte3" data-placeholder="Texte"':'')+' class="eyebrow catalog-eyebrow" style="font-size:'+texte3FontSize+'; font-weight:'+(texte3Bold?800:600)+';'+(texte3Color?' color:'+esc(texte3Color)+';':'')+' font-family:'+heroFontMap[texte3FontKey]+'; margin-bottom:0;">'+esc(texte3Text)+'</span>'+
         (inSettings ? '<button type="button" class="field-edit-btn" id="texte3-edit-toggle-btn" title="Modifier ce texte" aria-label="Modifier ce texte" style="position:absolute; top:-8px; right:-8px; background:#ffffff; border-radius:50%; padding:4px; opacity:1; box-shadow:0 1px 5px rgba(0,0,0,0.2);">'+pencilIconSVG()+'</button>' : '')+
         (inSettings ? resizeHandleHTML('texte3') : '')+
         (inSettings ? moveHandleHTML('texte3') : '')+
@@ -976,8 +976,8 @@
               '<img class="brand-mark" src="'+logoSrc+'" alt="Mascotte '+esc(brandText)+'">'+
               (inSettings ? '<button type="button" class="logo-photo-btn" id="logo-photo-btn" title="Changer l\'icône du site" aria-label="Changer l\'icône du site">📷</button><input type="file" accept="image/*" id="logo-photo-input" style="display:none;">' : '')+
             '</span>'+
-            '<span id="brand-title-wrap" style="position:relative; display:inline-block; transform:translate('+brandOffsetX+'px,'+brandOffsetY+'px);">'+
-              '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.brand" data-placeholder="Nom du site"':'')+' style="font-size:'+brandFontSize+'; font-weight:'+(brandBold?800:500)+';'+(brandColor?' color:'+esc(brandColor)+';':'')+' font-family:'+heroFontMap[brandFontKey]+'; letter-spacing:'+brandLetterSpacing+'px; display:inline-block;">'+esc(brandText)+'</span>'+
+            '<span id="brand-title-wrap" style="position:relative; display:inline-block;'+(brandBoxWidth?' width:'+brandBoxWidth+';':'')+' transform:translate('+brandOffsetX+'px,'+brandOffsetY+'px);">'+
+              '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.brand" data-placeholder="Nom du site"':'')+' style="font-size:'+brandFontSize+'; font-weight:'+(brandBold?800:500)+';'+(brandColor?' color:'+esc(brandColor)+';':'')+' font-family:'+heroFontMap[brandFontKey]+'; display:inline-block;">'+esc(brandText)+'</span>'+
               (inSettings ? resizeHandleHTML('brand') : '')+
               (inSettings ? moveHandleHTML('brand') : '')+
               (inSettings ? widthHandleHTML('brand') : '')+
@@ -985,8 +985,8 @@
             '</span>'+
           '</div>'+
         '</div>'+
-        '<div class="banner-title"><div id="hero-title-wrap" style="position:relative; transform:translate('+heroOffsetX+'px,'+heroOffsetY+'px);">'+
-          '<h1'+ce(inSettings)+(inSettings?' data-settings-field="texts.heroTitle"':'')+' style="font-size:'+heroFontSize+'; font-weight:'+(heroBold?900:400)+';'+(heroColor?' color:'+esc(heroColor)+';':'')+' font-family:'+heroFontMap[heroFontKey]+'; letter-spacing:'+heroLetterSpacing+'px;">'+esc(heroText)+'</h1>'+
+        '<div class="banner-title"><div id="hero-title-wrap" style="position:relative;'+(heroBoxWidth?' width:'+heroBoxWidth+';':'')+' transform:translate('+heroOffsetX+'px,'+heroOffsetY+'px);">'+
+          '<h1'+ce(inSettings)+(inSettings?' data-settings-field="texts.heroTitle"':'')+' style="font-size:'+heroFontSize+'; font-weight:'+(heroBold?900:400)+';'+(heroColor?' color:'+esc(heroColor)+';':'')+' font-family:'+heroFontMap[heroFontKey]+';">'+esc(heroText)+'</h1>'+
           (inSettings ? '<button type="button" class="field-edit-btn" id="hero-edit-toggle-btn" title="Modifier le titre principal" aria-label="Modifier le titre principal" style="position:absolute; top:-6px; right:-6px; background:#ffffff; border-radius:50%; padding:4px; opacity:1; box-shadow:0 1px 5px rgba(0,0,0,0.2);">'+pencilIconSVG()+'</button>' : '')+
           (inSettings ? resizeHandleHTML('hero') : '')+
           (inSettings ? moveHandleHTML('hero') : '')+
@@ -1487,21 +1487,21 @@
     if (heroWidthHandle) heroWidthHandle.addEventListener('pointerdown', function(e){
       e.preventDefault();
       e.stopPropagation();
-      var target = root.querySelector('.banner-title h1');
+      var target = document.getElementById('hero-title-wrap');
       if (!target) return;
       heroWidthHandle.setPointerCapture(e.pointerId);
       var startX = e.clientX;
-      var startSpacing = settingsDraft.colors.heroTitleLetterSpacing || 0;
+      var startWidth = target.getBoundingClientRect().width;
       function onMove(ev){
-        var delta = (ev.clientX - startX) / 12;
-        var ns = Math.max(-3, Math.min(40, startSpacing + delta));
-        target.style.letterSpacing = ns.toFixed(1) + 'px';
+        var delta = (ev.clientX - startX);
+        var nw = Math.max(150, Math.min(900, startWidth + delta));
+        target.style.width = nw.toFixed(1) + 'px';
       }
       function onUp(ev){
         heroWidthHandle.removeEventListener('pointermove', onMove);
         heroWidthHandle.removeEventListener('pointerup', onUp);
-        var finalSpacing = parseFloat(target.style.letterSpacing) || 0;
-        settingsDraft.colors.heroTitleLetterSpacing = finalSpacing;
+        var finalWidth = parseFloat(target.style.width) || startWidth;
+        settingsDraft.colors.heroTitleBoxWidth = finalWidth.toFixed(1) + 'px';
         markSettingsDirty();
         render();
       }
@@ -1611,21 +1611,21 @@
     if (brandWidthHandle) brandWidthHandle.addEventListener('pointerdown', function(e){
       e.preventDefault();
       e.stopPropagation();
-      var target = root.querySelector('.banner-nav .brand span[data-settings-field="texts.brand"]');
+      var target = document.getElementById('brand-title-wrap');
       if (!target) return;
       brandWidthHandle.setPointerCapture(e.pointerId);
       var startX = e.clientX;
-      var startSpacing = settingsDraft.colors.brandLetterSpacing || 0;
+      var startWidth = target.getBoundingClientRect().width;
       function onMove(ev){
-        var delta = (ev.clientX - startX) / 12;
-        var ns = Math.max(-2, Math.min(24, startSpacing + delta));
-        target.style.letterSpacing = ns.toFixed(1) + 'px';
+        var delta = (ev.clientX - startX);
+        var nw = Math.max(80, Math.min(500, startWidth + delta));
+        target.style.width = nw.toFixed(1) + 'px';
       }
       function onUp(ev){
         brandWidthHandle.removeEventListener('pointermove', onMove);
         brandWidthHandle.removeEventListener('pointerup', onUp);
-        var finalSpacing = parseFloat(target.style.letterSpacing) || 0;
-        settingsDraft.colors.brandLetterSpacing = finalSpacing;
+        var finalWidth = parseFloat(target.style.width) || startWidth;
+        settingsDraft.colors.brandBoxWidth = finalWidth.toFixed(1) + 'px';
         markSettingsDirty();
         render();
       }
@@ -1774,21 +1774,21 @@
     if (texte3WidthHandle) texte3WidthHandle.addEventListener('pointerdown', function(e){
       e.preventDefault();
       e.stopPropagation();
-      var target = root.querySelector('.catalog-intro span[data-settings-field="texts.texte3"]');
+      var target = document.getElementById('texte3-title-wrap');
       if (!target) return;
       texte3WidthHandle.setPointerCapture(e.pointerId);
       var startX = e.clientX;
-      var startSpacing = settingsDraft.colors.texte3LetterSpacing || 0;
+      var startWidth = target.getBoundingClientRect().width;
       function onMove(ev){
-        var delta = (ev.clientX - startX) / 12;
-        var ns = Math.max(-2, Math.min(20, startSpacing + delta));
-        target.style.letterSpacing = ns.toFixed(1) + 'px';
+        var delta = (ev.clientX - startX);
+        var nw = Math.max(150, Math.min(1100, startWidth + delta));
+        target.style.width = nw.toFixed(1) + 'px';
       }
       function onUp(ev){
         texte3WidthHandle.removeEventListener('pointermove', onMove);
         texte3WidthHandle.removeEventListener('pointerup', onUp);
-        var finalSpacing = parseFloat(target.style.letterSpacing) || 0;
-        settingsDraft.colors.texte3LetterSpacing = finalSpacing;
+        var finalWidth = parseFloat(target.style.width) || startWidth;
+        settingsDraft.colors.texte3BoxWidth = finalWidth.toFixed(1) + 'px';
         markSettingsDirty();
         render();
       }
