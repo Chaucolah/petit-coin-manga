@@ -96,6 +96,9 @@
   .hero-inner{display:grid; grid-template-columns:1fr; gap:40px; align-items:center; text-align:center;}
   .hero-inner .hero-actions{justify-content:center;}
   .eyebrow{display:inline-flex; align-items:center; gap:8px; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--sage-ink); background:color-mix(in srgb, var(--sage) 16%, transparent); border-radius:999px; padding:6px 12px; margin-bottom:18px;}
+  .eyebrow.catalog-eyebrow{font-size:0.85rem; padding:10px 20px; font-weight:700; box-shadow:0 3px 12px rgba(0,0,0,0.08);}
+  .catalog-intro{position:relative; text-align:center; margin:36px 0 22px;}
+  .catalog-sell-row{display:flex; justify-content:center; margin-top:44px;}
   .hero h1{font-size:clamp(2.1rem, 4.4vw, 3.2rem); margin:0 0 16px; line-height:1.08; font-weight:800; letter-spacing:-0.015em;}
   .hero p.lead{color:var(--ink-soft); font-size:1.05rem; max-width:46ch; margin:0 0 26px;}
   .hero-actions{display:flex; gap:12px; flex-wrap:wrap;}
@@ -269,8 +272,8 @@
   var STATE = JSON.parse(document.getElementById('state-data').textContent);
   var OWNER_EMAIL = 'marie-lam-21@hotmail.fr';
   var DEFAULT_SETTINGS = {
-    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false, logoImage:'', heroTitleSize:'md', heroTitleBold:true, heroTitleColor:'', heroTitleFont:'', heroTitleCustomPx:'', brandSize:'md', brandBold:true, brandColor:'', brandFont:'', brandCustomPx:'', navBtnBg:'', navBtnText:'', heroTitleOffsetX:0, heroTitleOffsetY:0, heroTitleLetterSpacing:0, brandOffsetX:0, brandOffsetY:0, brandLetterSpacing:0 },
-    texts: { brand:'Petit Coin Manga', heroTitle:'Des mangas et objets geek qui méritent une nouvelle étagère.', contactEmail:'contact@petitcoinmanga.fr', footerCopy:'© 2026 Petit Coin Manga' },
+    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false, logoImage:'', heroTitleSize:'md', heroTitleBold:true, heroTitleColor:'', heroTitleFont:'', heroTitleCustomPx:'', brandSize:'md', brandBold:true, brandColor:'', brandFont:'', brandCustomPx:'', navBtnBg:'', navBtnText:'', heroTitleOffsetX:0, heroTitleOffsetY:0, heroTitleLetterSpacing:0, brandOffsetX:0, brandOffsetY:0, brandLetterSpacing:0, texte3Size:'md', texte3Bold:true, texte3Color:'', texte3Font:'', texte3CustomPx:'', texte3OffsetX:0, texte3OffsetY:0, texte3LetterSpacing:0 },
+    texts: { brand:'Petit Coin Manga', heroTitle:'Des mangas et objets geek qui méritent une nouvelle étagère.', texte3:'Seconde vie pour vos mangas', contactEmail:'contact@petitcoinmanga.fr', footerCopy:'© 2026 Petit Coin Manga' },
     categories: [{key:'shonen', label:'Shônen', hidden:false}, {key:'seinen', label:'Seinen', hidden:false}, {key:'goodies', label:'Goodies', hidden:false}, {key:'promo', label:'En promo', hidden:false}]
   };
   var SETTINGS = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
@@ -378,7 +381,7 @@
       });
   }
 
-  var ui = { view: 'boutique', filter: 'all', editingIdx: null, ficheModalOpen: false, cart: [], dirty: false, status: '', contactState: 'idle', colorEditIdx: null, heroEditOpen: false, brandEditOpen: false, navBtnEditOpen: false,
+  var ui = { view: 'boutique', filter: 'all', editingIdx: null, ficheModalOpen: false, cart: [], dirty: false, status: '', contactState: 'idle', colorEditIdx: null, heroEditOpen: false, brandEditOpen: false, navBtnEditOpen: false, texte3EditOpen: false,
     auth: { session: null, mode: 'signup', status: '', busy: false, open: false } };
   var PRESET_HUES = ['#6e9083', '#d9bdf0', '#b1852f', '#0de0c4', '#ff2996', '#e3c3bd', '#2c2a2e', '#3d6bd9', '#e63946', '#f3722c', '#f9c74f', '#90be6d', '#43aa8b', '#577590', '#9d4edd', '#f28482', '#7f5539', '#adb5bd'];
   var root = document.getElementById('root');
@@ -915,6 +918,29 @@
     var heroPopoverHTML = (inSettings && ui.heroEditOpen) ? stylePopoverHTML('hero', heroSizeKey, [{value:'sm',label:'Petit'},{value:'md',label:'Moyen'},{value:'lg',label:'Grand'}], heroBold, heroFontKey, heroColor, 'top:100%; left:16px; margin-top:10px;') : '';
     var brandPopoverHTML = (inSettings && ui.brandEditOpen) ? stylePopoverHTML('brand', brandSizeKey, [{value:'sm',label:'Petit'},{value:'md',label:'Moyen'},{value:'lg',label:'Grand'}], brandBold, brandFontKey, brandColor, 'top:74px; left:16px;', 320) : '';
     var navBtnPopoverHTML = (inSettings && ui.navBtnEditOpen) ? navButtonsPopoverHTML(navBtnBg, navBtnText) : '';
+    var texte3SizeMap = { sm:'0.72rem', md:'0.85rem', lg:'1.05rem' };
+    var texte3SizeKey = (inSettings ? settingsDraft.colors.texte3Size : SETTINGS.colors.texte3Size) || 'md';
+    if (!texte3SizeMap[texte3SizeKey]) texte3SizeKey = 'md';
+    var texte3Bold = (inSettings ? settingsDraft.colors.texte3Bold : SETTINGS.colors.texte3Bold);
+    if (texte3Bold === undefined || texte3Bold === null) texte3Bold = true;
+    var texte3FontKey = (inSettings ? settingsDraft.colors.texte3Font : SETTINGS.colors.texte3Font) || '';
+    if (!heroFontMap[texte3FontKey]) texte3FontKey = '';
+    var texte3Color = (inSettings ? settingsDraft.colors.texte3Color : SETTINGS.colors.texte3Color) || '';
+    var texte3CustomPx = (inSettings ? settingsDraft.colors.texte3CustomPx : SETTINGS.colors.texte3CustomPx) || '';
+    var texte3FontSize = texte3CustomPx || texte3SizeMap[texte3SizeKey];
+    var texte3OffsetX = (inSettings ? settingsDraft.colors.texte3OffsetX : SETTINGS.colors.texte3OffsetX) || 0;
+    var texte3OffsetY = (inSettings ? settingsDraft.colors.texte3OffsetY : SETTINGS.colors.texte3OffsetY) || 0;
+    var texte3LetterSpacing = (inSettings ? settingsDraft.colors.texte3LetterSpacing : SETTINGS.colors.texte3LetterSpacing) || 0;
+    var texte3Text = inSettings ? settingsDraft.texts.texte3 : SETTINGS.texts.texte3;
+    var texte3PopoverHTML = (inSettings && ui.texte3EditOpen) ? stylePopoverHTML('texte3', texte3SizeKey, [{value:'sm',label:'Petit'},{value:'md',label:'Moyen'},{value:'lg',label:'Grand'}], texte3Bold, texte3FontKey, texte3Color, 'top:100%; left:50%; margin-top:10px; transform:translateX(-50%);', 300) : '';
+    var texte3BlockHTML = '<div class="catalog-intro"><div style="position:relative; display:inline-block;">'+
+        '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.texte3" data-placeholder="Texte"':'')+' class="eyebrow catalog-eyebrow" style="font-size:'+texte3FontSize+'; font-weight:'+(texte3Bold?800:600)+';'+(texte3Color?' color:'+esc(texte3Color)+';':'')+' font-family:'+heroFontMap[texte3FontKey]+';'+(texte3LetterSpacing?' letter-spacing:'+texte3LetterSpacing+'px;':'')+' transform:translate('+texte3OffsetX+'px,'+texte3OffsetY+'px); margin-bottom:0;">'+esc(texte3Text)+'</span>'+
+        (inSettings ? '<button type="button" class="field-edit-btn" id="texte3-edit-toggle-btn" title="Modifier ce texte" aria-label="Modifier ce texte" style="position:absolute; top:-8px; right:-8px; background:#ffffff; border-radius:50%; padding:4px; opacity:1; box-shadow:0 1px 5px rgba(0,0,0,0.2);">'+pencilIconSVG()+'</button>' : '')+
+        (inSettings ? resizeHandleHTML('texte3') : '')+
+        (inSettings ? moveHandleHTML('texte3') : '')+
+        (inSettings ? widthHandleHTML('texte3') : '')+
+        texte3PopoverHTML+
+      '</div></div>';
     var navActionsHTML = ''+
         (inSettings ? '<button id="home-btn" class="btn btn-ghost" type="button">← Accueil</button>' : '')+
         authHeaderHTML()+
@@ -961,18 +987,16 @@
         '<div class="header-actions">'+navActionsHTML+'</div>'+
       '</div></header>'
     )+
+    (isHome ? '<div class="wrap">'+texte3BlockHTML+'</div>' : '')+
     '<main class="wrap">'+
     (ui.view === 'contact' ? contactHTML().replace('wrap contact-page', 'contact-page') :
      ui.view === 'vendre' ? vendrePageHTML().replace('wrap vendre-page', 'vendre-page') :
      ui.view === 'panier' ? panierHTML().replace('wrap panier-page', 'panier-page') :
      ui.view === 'parametres' ? parametresHTML().replace('wrap parametres-page', 'parametres-page') : ''+
-      '<section class="hero"><div class="hero-inner"><div>'+
-        '<div class="hero-actions"><a class="btn btn-primary" href="#vendre" data-view="vendre">Je vends un manga</a></div>'+
-        '<span class="eyebrow" style="margin:20px 0 0;">Seconde vie pour vos mangas</span>'+
-      '</div></div></section>'+
       '<section id="catalogue" class="catalog">'+
         '<div class="filters">'+chips+'</div>'+
         '<div class="grid">'+cards+'</div>'+
+        '<div class="catalog-sell-row"><a class="btn btn-primary" href="#vendre" data-view="vendre">Je vends un manga</a></div>'+
       '</section>')+
     '</main>'+
     (inSettings ? '<div class="wrap" style="display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; padding:16px 0;">'+
@@ -1449,6 +1473,8 @@
     if (heroEditToggleBtn) heroEditToggleBtn.addEventListener('click', function(){
       ui.heroEditOpen = !ui.heroEditOpen;
       ui.brandEditOpen = false;
+      ui.navBtnEditOpen = false;
+      ui.texte3EditOpen = false;
       render();
     });
     var heroEditConfirmBtn = document.getElementById('hero-edit-confirm-btn');
@@ -1571,6 +1597,8 @@
     if (brandEditToggleBtn) brandEditToggleBtn.addEventListener('click', function(){
       ui.brandEditOpen = !ui.brandEditOpen;
       ui.heroEditOpen = false;
+      ui.navBtnEditOpen = false;
+      ui.texte3EditOpen = false;
       render();
     });
     var brandEditConfirmBtn = document.getElementById('brand-edit-confirm-btn');
@@ -1597,6 +1625,7 @@
       ui.navBtnEditOpen = !ui.navBtnEditOpen;
       ui.heroEditOpen = false;
       ui.brandEditOpen = false;
+      ui.texte3EditOpen = false;
       render();
     });
     var navBtnEditConfirmBtn = document.getElementById('navbtn-edit-confirm-btn');
@@ -1629,6 +1658,130 @@
       settingsDraft.colors.navBtnText = navBtnTextCustom.value;
       markSettingsDirty();
       document.documentElement.style.setProperty('--nav-btn-text', navBtnTextCustom.value);
+    });
+    var texte3BoldToggle = document.getElementById('texte3-bold-toggle');
+    if (texte3BoldToggle) texte3BoldToggle.addEventListener('click', function(){
+      settingsDraft.colors.texte3Bold = !settingsDraft.colors.texte3Bold;
+      markSettingsDirty();
+      render();
+    });
+    var texte3SizeSelect = document.getElementById('texte3-size-select');
+    if (texte3SizeSelect) texte3SizeSelect.addEventListener('change', function(){
+      settingsDraft.colors.texte3Size = texte3SizeSelect.value;
+      settingsDraft.colors.texte3CustomPx = '';
+      markSettingsDirty();
+      render();
+    });
+    var texte3ResizeHandle = document.getElementById('texte3-resize-handle');
+    if (texte3ResizeHandle) texte3ResizeHandle.addEventListener('pointerdown', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var target = root.querySelector('.catalog-intro span[data-settings-field="texts.texte3"]');
+      if (!target) return;
+      texte3ResizeHandle.setPointerCapture(e.pointerId);
+      var startX = e.clientX, startY = e.clientY;
+      var startSize = parseFloat(getComputedStyle(target).fontSize) || 14;
+      function onMove(ev){
+        var delta = ((ev.clientX - startX) + (ev.clientY - startY)) / 2;
+        var newSize = Math.max(10, Math.min(60, startSize + delta));
+        target.style.fontSize = newSize.toFixed(1) + 'px';
+      }
+      function onUp(ev){
+        texte3ResizeHandle.removeEventListener('pointermove', onMove);
+        texte3ResizeHandle.removeEventListener('pointerup', onUp);
+        var finalSize = parseFloat(target.style.fontSize) || startSize;
+        settingsDraft.colors.texte3CustomPx = finalSize.toFixed(1) + 'px';
+        markSettingsDirty();
+        render();
+      }
+      texte3ResizeHandle.addEventListener('pointermove', onMove);
+      texte3ResizeHandle.addEventListener('pointerup', onUp);
+    });
+    var texte3MoveHandle = document.getElementById('texte3-move-handle');
+    if (texte3MoveHandle) texte3MoveHandle.addEventListener('pointerdown', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var target = root.querySelector('.catalog-intro span[data-settings-field="texts.texte3"]');
+      if (!target) return;
+      texte3MoveHandle.setPointerCapture(e.pointerId);
+      var startX = e.clientX, startY = e.clientY;
+      var startOffX = settingsDraft.colors.texte3OffsetX || 0;
+      var startOffY = settingsDraft.colors.texte3OffsetY || 0;
+      function onMove(ev){
+        var nx = startOffX + (ev.clientX - startX);
+        var ny = startOffY + (ev.clientY - startY);
+        target.style.transform = 'translate('+nx+'px,'+ny+'px)';
+      }
+      function onUp(ev){
+        texte3MoveHandle.removeEventListener('pointermove', onMove);
+        texte3MoveHandle.removeEventListener('pointerup', onUp);
+        var nx = startOffX + (ev.clientX - startX);
+        var ny = startOffY + (ev.clientY - startY);
+        settingsDraft.colors.texte3OffsetX = Math.round(nx);
+        settingsDraft.colors.texte3OffsetY = Math.round(ny);
+        markSettingsDirty();
+        render();
+      }
+      texte3MoveHandle.addEventListener('pointermove', onMove);
+      texte3MoveHandle.addEventListener('pointerup', onUp);
+    });
+    var texte3WidthHandle = document.getElementById('texte3-width-handle');
+    if (texte3WidthHandle) texte3WidthHandle.addEventListener('pointerdown', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var target = root.querySelector('.catalog-intro span[data-settings-field="texts.texte3"]');
+      if (!target) return;
+      texte3WidthHandle.setPointerCapture(e.pointerId);
+      var startX = e.clientX;
+      var startSpacing = settingsDraft.colors.texte3LetterSpacing || 0;
+      function onMove(ev){
+        var delta = (ev.clientX - startX) / 12;
+        var ns = Math.max(-2, Math.min(20, startSpacing + delta));
+        target.style.letterSpacing = ns.toFixed(1) + 'px';
+      }
+      function onUp(ev){
+        texte3WidthHandle.removeEventListener('pointermove', onMove);
+        texte3WidthHandle.removeEventListener('pointerup', onUp);
+        var finalSpacing = parseFloat(target.style.letterSpacing) || 0;
+        settingsDraft.colors.texte3LetterSpacing = finalSpacing;
+        markSettingsDirty();
+        render();
+      }
+      texte3WidthHandle.addEventListener('pointermove', onMove);
+      texte3WidthHandle.addEventListener('pointerup', onUp);
+    });
+    var texte3FontSelect = document.getElementById('texte3-font-select');
+    if (texte3FontSelect) texte3FontSelect.addEventListener('change', function(){
+      settingsDraft.colors.texte3Font = texte3FontSelect.value;
+      markSettingsDirty();
+      render();
+    });
+    var texte3EditToggleBtn = document.getElementById('texte3-edit-toggle-btn');
+    if (texte3EditToggleBtn) texte3EditToggleBtn.addEventListener('click', function(){
+      ui.texte3EditOpen = !ui.texte3EditOpen;
+      ui.heroEditOpen = false;
+      ui.brandEditOpen = false;
+      ui.navBtnEditOpen = false;
+      render();
+    });
+    var texte3EditConfirmBtn = document.getElementById('texte3-edit-confirm-btn');
+    if (texte3EditConfirmBtn) texte3EditConfirmBtn.addEventListener('click', function(){
+      ui.texte3EditOpen = false;
+      render();
+    });
+    root.querySelectorAll('[data-texte3-hue-val]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        settingsDraft.colors.texte3Color = btn.getAttribute('data-texte3-hue-val');
+        markSettingsDirty();
+        render();
+      });
+    });
+    var texte3ColorCustom = document.getElementById('texte3-color-custom');
+    if (texte3ColorCustom) texte3ColorCustom.addEventListener('input', function(){
+      settingsDraft.colors.texte3Color = texte3ColorCustom.value;
+      markSettingsDirty();
+      var texte3Span = root.querySelector('.catalog-intro span[data-settings-field="texts.texte3"]');
+      if (texte3Span) texte3Span.style.color = texte3ColorCustom.value;
     });
     var bgImageInput = document.getElementById('bg-image-input');
     if (bgImageInput) bgImageInput.addEventListener('change', function(){
