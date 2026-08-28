@@ -2,7 +2,7 @@
 <title>Petit Coin Manga</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@400;600;700;800&family=Playfair+Display:wght@700;800&family=Baloo+2:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@400;600;700;800&family=Playfair+Display:wght@700;800&family=Baloo+2:wght@600;700;800&family=Pacifico&family=Bangers&family=Fredoka:wght@400;600;700&family=Caveat:wght@600;700&family=Bebas+Neue&family=Righteous&family=Montserrat:wght@400;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#faf6f0; --surface:#ffffff; --surface-2:#f3ede3;
@@ -429,12 +429,19 @@
         '<select id="'+idPrefix+'-size-select" title="Taille" style="border:1px solid var(--line); border-radius:999px; padding:5px 6px; font-size:0.72rem; cursor:pointer; background:#ffffff;">'+
           sizeOptions.map(function(o){ return '<option value="'+o.value+'"'+(sizeKey===o.value?' selected':'')+'>'+o.label+'</option>'; }).join('')+
         '</select>'+
-        '<select id="'+idPrefix+'-font-select" title="Police" style="border:1px solid var(--line); border-radius:999px; padding:5px 6px; font-size:0.72rem; cursor:pointer; background:#ffffff;">'+
+        '<select id="'+idPrefix+'-font-select" title="Police" style="border:1px solid var(--line); border-radius:999px; padding:5px 6px; font-size:0.72rem; cursor:pointer; background:#ffffff; max-width:100px;">'+
           '<option value=""'+(fontKey===''?' selected':'')+'>Défaut</option>'+
           '<option value="poppins"'+(fontKey==='poppins'?' selected':'')+'>Poppins</option>'+
           '<option value="playfair"'+(fontKey==='playfair'?' selected':'')+'>Playfair</option>'+
           '<option value="baloo"'+(fontKey==='baloo'?' selected':'')+'>Baloo</option>'+
           '<option value="pacifico"'+(fontKey==='pacifico'?' selected':'')+'>Pacifico</option>'+
+          '<option value="bangers"'+(fontKey==='bangers'?' selected':'')+'>Bangers</option>'+
+          '<option value="fredoka"'+(fontKey==='fredoka'?' selected':'')+'>Fredoka</option>'+
+          '<option value="caveat"'+(fontKey==='caveat'?' selected':'')+'>Caveat</option>'+
+          '<option value="bebas"'+(fontKey==='bebas'?' selected':'')+'>Bebas Neue</option>'+
+          '<option value="righteous"'+(fontKey==='righteous'?' selected':'')+'>Righteous</option>'+
+          '<option value="montserrat"'+(fontKey==='montserrat'?' selected':'')+'>Montserrat</option>'+
+          '<option value="dancing"'+(fontKey==='dancing'?' selected':'')+'>Dancing Script</option>'+
         '</select>'+
       '</div>'+
       '<div class="card-color-palette" style="padding-top:0; gap:5px;">'+
@@ -861,7 +868,7 @@
     if (!heroSizeMap[heroSizeKey]) heroSizeKey = 'md';
     var heroBold = (inSettings ? settingsDraft.colors.heroTitleBold : SETTINGS.colors.heroTitleBold);
     if (heroBold === undefined || heroBold === null) heroBold = true;
-    var heroFontMap = { '': "'Comfortaa','Manrope',system-ui,sans-serif", poppins: "'Poppins',system-ui,sans-serif", playfair: "'Playfair Display',serif", baloo: "'Baloo 2',system-ui,sans-serif", pacifico: "'Pacifico',cursive" };
+    var heroFontMap = { '': "'Comfortaa','Manrope',system-ui,sans-serif", poppins: "'Poppins',system-ui,sans-serif", playfair: "'Playfair Display',serif", baloo: "'Baloo 2',system-ui,sans-serif", pacifico: "'Pacifico',cursive", bangers: "'Bangers',cursive", fredoka: "'Fredoka',system-ui,sans-serif", caveat: "'Caveat',cursive", bebas: "'Bebas Neue',system-ui,sans-serif", righteous: "'Righteous',system-ui,sans-serif", montserrat: "'Montserrat',system-ui,sans-serif", dancing: "'Dancing Script',cursive" };
     var heroFontKey = (inSettings ? settingsDraft.colors.heroTitleFont : SETTINGS.colors.heroTitleFont) || '';
     if (!heroFontMap[heroFontKey]) heroFontKey = '';
     var heroColor = (inSettings ? settingsDraft.colors.heroTitleColor : SETTINGS.colors.heroTitleColor) || '';
