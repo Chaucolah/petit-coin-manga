@@ -97,7 +97,7 @@
   .hero-inner .hero-actions{justify-content:center;}
   .eyebrow{display:inline-flex; align-items:center; gap:8px; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--sage-ink); background:color-mix(in srgb, var(--sage) 16%, transparent); border-radius:999px; padding:6px 12px; margin-bottom:18px;}
   .eyebrow.catalog-eyebrow{font-size:0.85rem; padding:0; font-weight:700; background:transparent; box-shadow:none; border-radius:0;}
-  .catalog-intro{position:relative; text-align:center; width:100%; margin:36px 0 42px; background:#ffffff; border:1px solid var(--line); border-radius:20px; padding:44px 32px; box-shadow:0 6px 22px rgba(0,0,0,0.12);}
+  .catalog-intro{position:relative; text-align:center; width:100%; margin:36px 0 18px; background:#ffffff; border:1px solid var(--line); border-radius:20px; padding:44px 32px; box-shadow:0 6px 22px rgba(0,0,0,0.12);}
   .catalog-sell-row{display:flex; justify-content:center; margin-top:44px;}
   .hero h1{font-size:clamp(2.1rem, 4.4vw, 3.2rem); margin:0 0 16px; line-height:1.08; font-weight:800; letter-spacing:-0.015em;}
   .hero p.lead{color:var(--ink-soft); font-size:1.05rem; max-width:46ch; margin:0 0 26px;}
@@ -272,7 +272,7 @@
   var STATE = JSON.parse(document.getElementById('state-data').textContent);
   var OWNER_EMAIL = 'marie-lam-21@hotmail.fr';
   var DEFAULT_SETTINGS = {
-    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false, logoImage:'', heroTitleSize:'md', heroTitleBold:true, heroTitleColor:'', heroTitleFont:'', heroTitleCustomPx:'', brandSize:'md', brandBold:true, brandColor:'', brandFont:'', brandCustomPx:'', navBtnBg:'', navBtnText:'', heroTitleOffsetX:0, heroTitleOffsetY:0, heroTitleBoxWidth:'', brandOffsetX:0, brandOffsetY:0, brandBoxWidth:'', texte3Size:'md', texte3Bold:true, texte3Color:'', texte3Font:'', texte3CustomPx:'', texte3OffsetX:0, texte3OffsetY:0, texte3BoxWidth:'' },
+    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false, logoImage:'', logoSize:'', heroTitleSize:'md', heroTitleBold:true, heroTitleColor:'', heroTitleFont:'', heroTitleCustomPx:'', brandSize:'md', brandBold:true, brandColor:'', brandFont:'', brandCustomPx:'', navBtnBg:'', navBtnText:'', heroTitleOffsetX:0, heroTitleOffsetY:0, heroTitleBoxWidth:'', brandOffsetX:0, brandOffsetY:0, brandBoxWidth:'', texte3Size:'md', texte3Bold:true, texte3Color:'', texte3Font:'', texte3CustomPx:'', texte3OffsetX:0, texte3OffsetY:0, texte3BoxWidth:'' },
     texts: { brand:'Petit Coin Manga', heroTitle:'Des mangas et objets geek qui méritent une nouvelle étagère.', texte3:'Seconde vie pour vos mangas', contactEmail:'contact@petitcoinmanga.fr', footerCopy:'© 2026 Petit Coin Manga' },
     categories: [{key:'shonen', label:'Shônen', hidden:false}, {key:'seinen', label:'Seinen', hidden:false}, {key:'goodies', label:'Goodies', hidden:false}, {key:'promo', label:'En promo', hidden:false}]
   };
@@ -473,6 +473,10 @@
     '</div>';
   }
 
+  function logoResizeHandleHTML(){
+    return '<span class="resize-handle" id="logo-resize-handle" title="Glisser pour agrandir le logo" aria-label="Agrandir le logo" style="position:absolute; bottom:-4px; right:-4px; width:15px; height:15px; border-radius:50%; background:var(--sage); border:2px solid #ffffff; box-shadow:0 1px 4px rgba(0,0,0,0.35); cursor:nwse-resize; z-index:6; touch-action:none;"></span>';
+  }
+
   function moveHandleHTML(idPrefix){
     return '<span class="move-handle" id="'+idPrefix+'-move-handle" title="Glisser pour déplacer" aria-label="Déplacer">✥</span>';
   }
@@ -644,7 +648,7 @@
   function authHeaderHTML(){
     if (ui.auth.session) {
       return '<div style="position:relative;">'+
-        '<button class="edit-toggle" type="button" id="auth-btn"><span class="check-ico">✓</span><span>Connecté(e)</span></button>'+
+        '<button class="edit-toggle" type="button" id="auth-btn"><span class="check-ico">✨</span><span>Connecté(e)</span></button>'+
         (ui.auth.open ? authDropdownLoggedInHTML() : '')+
       '</div>';
     }
@@ -907,6 +911,7 @@
     var brandText = inSettings ? settingsDraft.texts.brand : SETTINGS.texts.brand;
     var heroText = inSettings ? settingsDraft.texts.heroTitle : SETTINGS.texts.heroTitle;
     var logoSrc = ((inSettings ? settingsDraft.colors.logoImage : SETTINGS.colors.logoImage) || LOGO_SRC);
+    var logoSize = (inSettings ? settingsDraft.colors.logoSize : SETTINGS.colors.logoSize) || '';
     var heroSizeMap = { sm:'clamp(1.6rem, 4vw, 2.4rem)', md:'clamp(2rem, 5vw, 3.6rem)', lg:'clamp(2.2rem, 5vw, 3.75rem)' };
     var heroSizeKey = (inSettings ? settingsDraft.colors.heroTitleSize : SETTINGS.colors.heroTitleSize) || 'md';
     if (!heroSizeMap[heroSizeKey]) heroSizeKey = 'md';
@@ -918,7 +923,7 @@
     var heroColor = (inSettings ? settingsDraft.colors.heroTitleColor : SETTINGS.colors.heroTitleColor) || '';
     var heroCustomPx = (inSettings ? settingsDraft.colors.heroTitleCustomPx : SETTINGS.colors.heroTitleCustomPx) || '';
     var heroFontSize = heroCustomPx || heroSizeMap[heroSizeKey];
-    var brandSizeMap = { sm:'0.85rem', md:'1.15rem', lg:'1.5rem' };
+    var brandSizeMap = { sm:'1.3rem', md:'1.8rem', lg:'2.4rem' };
     var brandSizeKey = (inSettings ? settingsDraft.colors.brandSize : SETTINGS.colors.brandSize) || 'md';
     if (!brandSizeMap[brandSizeKey]) brandSizeKey = 'md';
     var brandBold = (inSettings ? settingsDraft.colors.brandBold : SETTINGS.colors.brandBold);
@@ -957,6 +962,7 @@
     var texte3Text = inSettings ? settingsDraft.texts.texte3 : SETTINGS.texts.texte3;
     var texte3PopoverHTML = (inSettings && ui.texte3EditOpen) ? stylePopoverHTML('texte3', texte3SizeKey, [{value:'sm',label:'Petit'},{value:'md',label:'Moyen'},{value:'lg',label:'Grand'}], texte3Bold, texte3FontKey, texte3Color, 'top:100%; left:50%; margin-top:10px; transform:translateX(-50%);', 300) : '';
     var texte3BlockHTML = '<div class="catalog-intro"><div id="texte3-title-wrap" style="position:relative; display:inline-block;'+(texte3BoxWidth?' width:'+texte3BoxWidth+';':'')+' transform:translate('+texte3OffsetX+'px,'+texte3OffsetY+'px);">'+
+        (inSettings && ui.texte3EditOpen ? '<div style="position:absolute; bottom:100%; left:50%; transform:translateX(-50%); margin-bottom:10px; background:#2c2a2e; color:#fff; font-size:0.72rem; line-height:1.35; padding:8px 12px; border-radius:10px; width:260px; text-align:left; box-shadow:0 4px 14px rgba(0,0,0,0.25); z-index:31;">💡 Astuce de rédaction : une phrase courte qui donne confiance ou envie d\'agir. Ex. "Des mangas bien entretenus, à petit prix" ou "Vends ou achète en toute simplicité".</div>' : '')+
         '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.texte3" data-placeholder="Texte"':'')+' class="eyebrow catalog-eyebrow" style="font-size:'+texte3FontSize+'; font-weight:'+(texte3Bold?800:600)+';'+(texte3Color?' color:'+esc(texte3Color)+';':'')+' font-family:'+heroFontMap[texte3FontKey]+'; margin-bottom:0;">'+esc(texte3Text)+'</span>'+
         (inSettings ? '<button type="button" class="field-edit-btn" id="texte3-edit-toggle-btn" title="Modifier ce texte" aria-label="Modifier ce texte" style="position:absolute; top:-8px; right:-8px; background:#ffffff; border-radius:50%; padding:4px; opacity:1; box-shadow:0 1px 5px rgba(0,0,0,0.2);">'+pencilIconSVG()+'</button>' : '')+
         (inSettings ? resizeHandleHTML('texte3') : '')+
@@ -976,8 +982,9 @@
         '<div class="banner-nav">'+
           '<div class="brand">'+
             '<span class="logo-wrap">'+
-              '<img class="brand-mark" src="'+logoSrc+'" alt="Mascotte '+esc(brandText)+'">'+
+              '<img class="brand-mark" src="'+logoSrc+'" alt="Mascotte '+esc(brandText)+'"'+(logoSize?' style="width:'+logoSize+'; height:'+logoSize+';"':'')+'>'+
               (inSettings ? '<button type="button" class="logo-photo-btn" id="logo-photo-btn" title="Changer l\'icône du site" aria-label="Changer l\'icône du site">📷</button><input type="file" accept="image/*" id="logo-photo-input" style="display:none;">' : '')+
+              (inSettings ? logoResizeHandleHTML() : '')+
             '</span>'+
             '<span id="brand-title-wrap" style="position:relative; display:inline-block;'+(brandBoxWidth?' width:'+brandBoxWidth+';':'')+' transform:translate('+brandOffsetX+'px,'+brandOffsetY+'px);">'+
               '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.brand" data-placeholder="Nom du site"':'')+' style="font-size:'+brandFontSize+'; font-weight:'+(brandBold?800:500)+';'+(brandColor?' color:'+esc(brandColor)+';':'')+' font-family:'+heroFontMap[brandFontKey]+'; display:inline-block;">'+esc(brandText)+'</span>'+
@@ -1419,6 +1426,32 @@
         img.src = e.target.result;
       };
       reader.readAsDataURL(file);
+    });
+    var logoResizeHandle = document.getElementById('logo-resize-handle');
+    if (logoResizeHandle) logoResizeHandle.addEventListener('pointerdown', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var target = root.querySelector('.banner-nav .brand-mark');
+      if (!target) return;
+      logoResizeHandle.setPointerCapture(e.pointerId);
+      var startX = e.clientX, startY = e.clientY;
+      var startSize = parseFloat(getComputedStyle(target).width) || 40;
+      function onMove(ev){
+        var delta = ((ev.clientX - startX) + (ev.clientY - startY)) / 2;
+        var newSize = Math.max(30, Math.min(140, startSize + delta));
+        target.style.width = newSize.toFixed(1) + 'px';
+        target.style.height = newSize.toFixed(1) + 'px';
+      }
+      function onUp(ev){
+        logoResizeHandle.removeEventListener('pointermove', onMove);
+        logoResizeHandle.removeEventListener('pointerup', onUp);
+        var finalSize = parseFloat(target.style.width) || startSize;
+        settingsDraft.colors.logoSize = finalSize.toFixed(1) + 'px';
+        markSettingsDirty();
+        render();
+      }
+      logoResizeHandle.addEventListener('pointermove', onMove);
+      logoResizeHandle.addEventListener('pointerup', onUp);
     });
     var heroBoldToggle = document.getElementById('hero-bold-toggle');
     if (heroBoldToggle) heroBoldToggle.addEventListener('click', function(){
