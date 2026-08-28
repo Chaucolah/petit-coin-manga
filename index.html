@@ -2,7 +2,7 @@
 <title>Petit Coin Manga</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Manrope:wght@400;500;600;700;800&family=Poppins:wght@400;600;700;800&family=Playfair+Display:wght@700;800&family=Baloo+2:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#faf6f0; --surface:#ffffff; --surface-2:#f3ede3;
@@ -252,7 +252,7 @@
   var STATE = JSON.parse(document.getElementById('state-data').textContent);
   var OWNER_EMAIL = 'marie-lam-21@hotmail.fr';
   var DEFAULT_SETTINGS = {
-    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false, logoImage:'', heroTitleSize:'md', heroTitleBold:true },
+    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false, logoImage:'', heroTitleSize:'md', heroTitleBold:true, heroTitleColor:'', heroTitleFont:'' },
     texts: { brand:'Petit Coin Manga', heroTitle:'Des mangas et objets geek qui méritent une nouvelle étagère.', contactEmail:'contact@petitcoinmanga.fr', footerCopy:'© 2026 Petit Coin Manga' },
     categories: [{key:'shonen', label:'Shônen', hidden:false}, {key:'seinen', label:'Seinen', hidden:false}, {key:'goodies', label:'Goodies', hidden:false}, {key:'promo', label:'En promo', hidden:false}]
   };
@@ -361,7 +361,7 @@
       });
   }
 
-  var ui = { view: 'boutique', filter: 'all', editingIdx: null, ficheModalOpen: false, cart: [], dirty: false, status: '', contactState: 'idle', colorEditIdx: null,
+  var ui = { view: 'boutique', filter: 'all', editingIdx: null, ficheModalOpen: false, cart: [], dirty: false, status: '', contactState: 'idle', colorEditIdx: null, heroEditOpen: false,
     auth: { session: null, mode: 'signup', status: '', busy: false, open: false } };
   var PRESET_HUES = ['#6e9083', '#d9bdf0', '#b1852f', '#0de0c4', '#ff2996', '#e3c3bd', '#2c2a2e', '#3d6bd9', '#e63946', '#f3722c', '#f9c74f', '#90be6d', '#43aa8b', '#577590', '#9d4edd', '#f28482', '#7f5539', '#adb5bd'];
   var root = document.getElementById('root');
@@ -799,6 +799,10 @@
     if (!heroSizeMap[heroSizeKey]) heroSizeKey = 'md';
     var heroBold = (inSettings ? settingsDraft.colors.heroTitleBold : SETTINGS.colors.heroTitleBold);
     if (heroBold === undefined || heroBold === null) heroBold = true;
+    var heroFontMap = { '': "'Comfortaa','Manrope',system-ui,sans-serif", poppins: "'Poppins',system-ui,sans-serif", playfair: "'Playfair Display',serif", baloo: "'Baloo 2',system-ui,sans-serif", pacifico: "'Pacifico',cursive" };
+    var heroFontKey = (inSettings ? settingsDraft.colors.heroTitleFont : SETTINGS.colors.heroTitleFont) || '';
+    if (!heroFontMap[heroFontKey]) heroFontKey = '';
+    var heroColor = (inSettings ? settingsDraft.colors.heroTitleColor : SETTINGS.colors.heroTitleColor) || '';
     var navActionsHTML = ''+
         (inSettings ? '<button id="home-btn" class="btn btn-ghost" type="button" style="background:#ffffff;">← Accueil</button>' : '')+
         authHeaderHTML()+
@@ -818,19 +822,44 @@
             (inSettings ? '<button type="button" class="field-edit-btn" data-focus-settings-field="texts.brand" title="Modifier le titre du site" aria-label="Modifier le titre du site" style="background:#ffffff; border-radius:50%; padding:4px; opacity:1;">'+pencilIconSVG()+'</button>' : '')+
           '</div>'+
         '</div>'+
-        '<div class="banner-title"><h1'+ce(inSettings)+(inSettings?' data-settings-field="texts.heroTitle"':'')+' style="font-size:'+heroSizeMap[heroSizeKey]+'; font-weight:'+(heroBold?900:400)+';">'+esc(heroText)+'</h1></div>'+
+        '<div class="banner-title"><div style="position:relative;">'+
+          '<h1'+ce(inSettings)+(inSettings?' data-settings-field="texts.heroTitle"':'')+' style="font-size:'+heroSizeMap[heroSizeKey]+'; font-weight:'+(heroBold?900:400)+';'+(heroColor?' color:'+esc(heroColor)+';':'')+' font-family:'+heroFontMap[heroFontKey]+';">'+esc(heroText)+'</h1>'+
+          (inSettings ? '<button type="button" class="field-edit-btn" id="hero-edit-toggle-btn" title="Modifier le titre principal" aria-label="Modifier le titre principal" style="position:absolute; top:-6px; right:-6px; background:#ffffff; border-radius:50%; padding:4px; opacity:1; box-shadow:0 1px 5px rgba(0,0,0,0.2);">'+pencilIconSVG()+'</button>' : '')+
+        '</div></div>'+
       '</div>'+
-      (inSettings ? '<div class="wrap" style="display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; padding:10px 0 4px;">'+
-        '<button type="button" class="btn btn-ghost" data-focus-settings-field="texts.heroTitle" style="background:#ffffff; padding:7px 14px; font-size:0.8rem; display:inline-flex; align-items:center; gap:6px;">'+pencilIconSVG()+'<span>Titre principal</span></button>'+
-        '<button type="button" id="hero-bold-toggle" class="btn btn-ghost" style="background:#ffffff; padding:7px 14px; font-size:0.8rem; font-weight:'+(heroBold?'900':'400')+';'+(heroBold?' border-color:var(--sage); color:var(--sage-ink);':'')+'">Gras</button>'+
-        '<label style="display:inline-flex; align-items:center; gap:8px; background:#ffffff; border:1px solid var(--line); border-radius:999px; padding:7px 14px; font-size:0.8rem; cursor:pointer;">'+
-          '<span>Taille</span>'+
-          '<select id="hero-size-select" style="border:none; background:transparent; font-size:0.8rem; cursor:pointer;">'+
-            '<option value="sm"'+(heroSizeKey==='sm'?' selected':'')+'>Petit</option>'+
-            '<option value="md"'+(heroSizeKey==='md'?' selected':'')+'>Moyen</option>'+
-            '<option value="lg"'+(heroSizeKey==='lg'?' selected':'')+'>Grand</option>'+
-          '</select>'+
-        '</label>'+
+      (inSettings && ui.heroEditOpen ? '<div class="wrap" style="display:flex; justify-content:center; padding:10px 0 4px;">'+
+        '<div style="background:#ffffff; border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); padding:16px 18px; display:flex; flex-direction:column; gap:12px; max-width:560px; width:100%;">'+
+          '<div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">'+
+            '<button type="button" id="hero-bold-toggle" class="btn btn-ghost" style="padding:7px 14px; font-size:0.8rem; font-weight:'+(heroBold?'900':'400')+';'+(heroBold?' border-color:var(--sage); color:var(--sage-ink);':'')+'">Gras</button>'+
+            '<label style="display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:999px; padding:7px 14px; font-size:0.8rem; cursor:pointer;">'+
+              '<span>Taille</span>'+
+              '<select id="hero-size-select" style="border:none; background:transparent; font-size:0.8rem; cursor:pointer;">'+
+                '<option value="sm"'+(heroSizeKey==='sm'?' selected':'')+'>Petit</option>'+
+                '<option value="md"'+(heroSizeKey==='md'?' selected':'')+'>Moyen</option>'+
+                '<option value="lg"'+(heroSizeKey==='lg'?' selected':'')+'>Grand</option>'+
+              '</select>'+
+            '</label>'+
+            '<label style="display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:999px; padding:7px 14px; font-size:0.8rem; cursor:pointer;">'+
+              '<span>Police</span>'+
+              '<select id="hero-font-select" style="border:none; background:transparent; font-size:0.8rem; cursor:pointer;">'+
+                '<option value=""'+(heroFontKey===''?' selected':'')+'>Défaut</option>'+
+                '<option value="poppins"'+(heroFontKey==='poppins'?' selected':'')+'>Poppins</option>'+
+                '<option value="playfair"'+(heroFontKey==='playfair'?' selected':'')+'>Playfair</option>'+
+                '<option value="baloo"'+(heroFontKey==='baloo'?' selected':'')+'>Baloo</option>'+
+                '<option value="pacifico"'+(heroFontKey==='pacifico'?' selected':'')+'>Pacifico</option>'+
+              '</select>'+
+            '</label>'+
+          '</div>'+
+          '<div>'+
+            '<span style="font-size:0.78rem; color:var(--ink-soft); display:block; margin-bottom:6px;">Couleur du titre</span>'+
+            '<div class="card-color-palette" style="padding-top:0;">'+
+              PRESET_HUES.map(function(h){ return '<button type="button" class="palette-swatch'+(heroColor===h?' active':'')+'" data-hero-hue-val="'+h+'" style="background:'+h+';" aria-label="Choisir cette couleur"></button>'; }).join('')+
+              '<input type="color" class="palette-custom" id="hero-color-custom" value="'+(heroColor && heroColor.charAt(0)==='#' ? heroColor : '#2c2a22')+'">'+
+              '<button type="button" class="btn btn-ghost" id="hero-color-reset-btn" style="padding:5px 12px; font-size:0.74rem;">Réinitialiser</button>'+
+            '</div>'+
+          '</div>'+
+          '<button type="button" id="hero-edit-confirm-btn" class="btn btn-primary" style="align-self:flex-end; padding:8px 22px; display:inline-flex; align-items:center; gap:6px;"><span>✓</span><span>Valider</span></button>'+
+        '</div>'+
       '</div>' : '')+
       '<div class="banner-actions-row"><div class="header-actions">'+navActionsHTML+'</div></div>'+
       '</div>'
@@ -1236,6 +1265,42 @@
     var heroSizeSelect = document.getElementById('hero-size-select');
     if (heroSizeSelect) heroSizeSelect.addEventListener('change', function(){
       settingsDraft.colors.heroTitleSize = heroSizeSelect.value;
+      markSettingsDirty();
+      render();
+    });
+    var heroFontSelect = document.getElementById('hero-font-select');
+    if (heroFontSelect) heroFontSelect.addEventListener('change', function(){
+      settingsDraft.colors.heroTitleFont = heroFontSelect.value;
+      markSettingsDirty();
+      render();
+    });
+    var heroEditToggleBtn = document.getElementById('hero-edit-toggle-btn');
+    if (heroEditToggleBtn) heroEditToggleBtn.addEventListener('click', function(){
+      ui.heroEditOpen = !ui.heroEditOpen;
+      render();
+    });
+    var heroEditConfirmBtn = document.getElementById('hero-edit-confirm-btn');
+    if (heroEditConfirmBtn) heroEditConfirmBtn.addEventListener('click', function(){
+      ui.heroEditOpen = false;
+      render();
+    });
+    root.querySelectorAll('[data-hero-hue-val]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        settingsDraft.colors.heroTitleColor = btn.getAttribute('data-hero-hue-val');
+        markSettingsDirty();
+        render();
+      });
+    });
+    var heroColorCustom = document.getElementById('hero-color-custom');
+    if (heroColorCustom) heroColorCustom.addEventListener('input', function(){
+      settingsDraft.colors.heroTitleColor = heroColorCustom.value;
+      markSettingsDirty();
+      var h1 = root.querySelector('.banner-title h1');
+      if (h1) h1.style.color = heroColorCustom.value;
+    });
+    var heroColorResetBtn = document.getElementById('hero-color-reset-btn');
+    if (heroColorResetBtn) heroColorResetBtn.addEventListener('click', function(){
+      settingsDraft.colors.heroTitleColor = '';
       markSettingsDirty();
       render();
     });
