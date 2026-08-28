@@ -252,7 +252,7 @@
   var STATE = JSON.parse(document.getElementById('state-data').textContent);
   var OWNER_EMAIL = 'marie-lam-21@hotmail.fr';
   var DEFAULT_SETTINGS = {
-    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false, logoImage:'', heroTitleSize:'md', heroTitleBold:true, heroTitleColor:'', heroTitleFont:'' },
+    colors: { sage:'#6e9083', ink:'#2c2a2e', surface:'#ffffff', gold:'#2e8b57', grad1:'#0de0c4', grad2:'#ff2996', grad3:'#d9bdf0', bgImage:'', bodyBg:'', footerBg:'', footerInk:'', pattern:false, logoImage:'', heroTitleSize:'md', heroTitleBold:true, heroTitleColor:'', heroTitleFont:'', brandSize:'md', brandBold:true, brandColor:'', brandFont:'' },
     texts: { brand:'Petit Coin Manga', heroTitle:'Des mangas et objets geek qui méritent une nouvelle étagère.', contactEmail:'contact@petitcoinmanga.fr', footerCopy:'© 2026 Petit Coin Manga' },
     categories: [{key:'shonen', label:'Shônen', hidden:false}, {key:'seinen', label:'Seinen', hidden:false}, {key:'goodies', label:'Goodies', hidden:false}, {key:'promo', label:'En promo', hidden:false}]
   };
@@ -361,7 +361,7 @@
       });
   }
 
-  var ui = { view: 'boutique', filter: 'all', editingIdx: null, ficheModalOpen: false, cart: [], dirty: false, status: '', contactState: 'idle', colorEditIdx: null, heroEditOpen: false,
+  var ui = { view: 'boutique', filter: 'all', editingIdx: null, ficheModalOpen: false, cart: [], dirty: false, status: '', contactState: 'idle', colorEditIdx: null, heroEditOpen: false, brandEditOpen: false,
     auth: { session: null, mode: 'signup', status: '', busy: false, open: false } };
   var PRESET_HUES = ['#6e9083', '#d9bdf0', '#b1852f', '#0de0c4', '#ff2996', '#e3c3bd', '#2c2a2e', '#3d6bd9', '#e63946', '#f3722c', '#f9c74f', '#90be6d', '#43aa8b', '#577590', '#9d4edd', '#f28482', '#7f5539', '#adb5bd'];
   var root = document.getElementById('root');
@@ -407,6 +407,29 @@
 
   function pencilIconSVG(){
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5 19 9l-9.5 9.5-5 1 1-5 9-9Z"/><path d="M13 6l4.5 4.5"/></svg>';
+  }
+
+  function stylePopoverHTML(idPrefix, sizeKey, sizeOptions, bold, fontKey, color){
+    return '<div class="style-popover" style="position:absolute; top:64px; left:16px; z-index:30; background:#ffffff; border:1px solid var(--line); border-radius:14px; box-shadow:0 6px 22px rgba(0,0,0,0.2); padding:12px 14px; display:flex; flex-direction:column; gap:9px; width:216px;">'+
+      '<div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">'+
+        '<button type="button" id="'+idPrefix+'-bold-toggle" class="btn btn-ghost" title="Gras" aria-label="Gras" style="padding:5px 10px; font-size:0.72rem; font-weight:'+(bold?'900':'400')+';'+(bold?' border-color:var(--sage); color:var(--sage-ink);':'')+'">Gras</button>'+
+        '<select id="'+idPrefix+'-size-select" title="Taille" style="border:1px solid var(--line); border-radius:999px; padding:5px 6px; font-size:0.72rem; cursor:pointer; background:#ffffff;">'+
+          sizeOptions.map(function(o){ return '<option value="'+o.value+'"'+(sizeKey===o.value?' selected':'')+'>'+o.label+'</option>'; }).join('')+
+        '</select>'+
+        '<select id="'+idPrefix+'-font-select" title="Police" style="border:1px solid var(--line); border-radius:999px; padding:5px 6px; font-size:0.72rem; cursor:pointer; background:#ffffff;">'+
+          '<option value=""'+(fontKey===''?' selected':'')+'>Défaut</option>'+
+          '<option value="poppins"'+(fontKey==='poppins'?' selected':'')+'>Poppins</option>'+
+          '<option value="playfair"'+(fontKey==='playfair'?' selected':'')+'>Playfair</option>'+
+          '<option value="baloo"'+(fontKey==='baloo'?' selected':'')+'>Baloo</option>'+
+          '<option value="pacifico"'+(fontKey==='pacifico'?' selected':'')+'>Pacifico</option>'+
+        '</select>'+
+      '</div>'+
+      '<div class="card-color-palette" style="padding-top:0; gap:5px;">'+
+        PRESET_HUES.map(function(h){ return '<button type="button" class="palette-swatch'+(color===h?' active':'')+'" data-'+idPrefix+'-hue-val="'+h+'" style="background:'+h+'; width:17px; height:17px;" aria-label="Choisir cette couleur"></button>'; }).join('')+
+        '<input type="color" class="palette-custom" id="'+idPrefix+'-color-custom" value="'+(color && color.charAt(0)==='#' ? color : '#2c2a22')+'" style="width:20px; height:20px;">'+
+      '</div>'+
+      '<button type="button" id="'+idPrefix+'-edit-confirm-btn" class="btn btn-primary" title="Valider" aria-label="Valider" style="align-self:flex-end; padding:0; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; line-height:1;">✓</button>'+
+    '</div>';
   }
 
   function categoryBadge(it){
@@ -803,6 +826,16 @@
     var heroFontKey = (inSettings ? settingsDraft.colors.heroTitleFont : SETTINGS.colors.heroTitleFont) || '';
     if (!heroFontMap[heroFontKey]) heroFontKey = '';
     var heroColor = (inSettings ? settingsDraft.colors.heroTitleColor : SETTINGS.colors.heroTitleColor) || '';
+    var brandSizeMap = { sm:'0.85rem', md:'1.15rem', lg:'1.5rem' };
+    var brandSizeKey = (inSettings ? settingsDraft.colors.brandSize : SETTINGS.colors.brandSize) || 'md';
+    if (!brandSizeMap[brandSizeKey]) brandSizeKey = 'md';
+    var brandBold = (inSettings ? settingsDraft.colors.brandBold : SETTINGS.colors.brandBold);
+    if (brandBold === undefined || brandBold === null) brandBold = true;
+    var brandFontKey = (inSettings ? settingsDraft.colors.brandFont : SETTINGS.colors.brandFont) || '';
+    if (!heroFontMap[brandFontKey]) brandFontKey = '';
+    var brandColor = (inSettings ? settingsDraft.colors.brandColor : SETTINGS.colors.brandColor) || '';
+    var heroPopoverHTML = (inSettings && ui.heroEditOpen) ? stylePopoverHTML('hero', heroSizeKey, [{value:'sm',label:'Petit'},{value:'md',label:'Moyen'},{value:'lg',label:'Grand'}], heroBold, heroFontKey, heroColor) : '';
+    var brandPopoverHTML = (inSettings && ui.brandEditOpen) ? stylePopoverHTML('brand', brandSizeKey, [{value:'sm',label:'Petit'},{value:'md',label:'Moyen'},{value:'lg',label:'Grand'}], brandBold, brandFontKey, brandColor) : '';
     var navActionsHTML = ''+
         (inSettings ? '<button id="home-btn" class="btn btn-ghost" type="button" style="background:#ffffff;">← Accueil</button>' : '')+
         authHeaderHTML()+
@@ -810,7 +843,7 @@
         '<button class="cart-pill" type="button" id="cart-pill-btn">🛍️ Panier · '+ui.cart.length+'</button>';
     root.innerHTML = ''+
     (isHome ?
-      '<div class="wrap"><div class="top-banner">'+
+      '<div class="wrap"><div class="banner-wrap" style="position:relative;"><div class="top-banner">'+
         '<img class="banner-photo" src="'+HERO_BANNER_SRC+'" alt="Bannière '+esc(brandText)+'">'+
         '<div class="banner-nav">'+
           '<div class="brand">'+
@@ -818,8 +851,8 @@
               '<img class="brand-mark" src="'+logoSrc+'" alt="Mascotte '+esc(brandText)+'">'+
               (inSettings ? '<button type="button" class="logo-photo-btn" id="logo-photo-btn" title="Changer l\'icône du site" aria-label="Changer l\'icône du site">📷</button><input type="file" accept="image/*" id="logo-photo-input" style="display:none;">' : '')+
             '</span>'+
-            '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.brand" data-placeholder="Nom du site"':'')+'>'+esc(brandText)+'</span>'+
-            (inSettings ? '<button type="button" class="field-edit-btn" data-focus-settings-field="texts.brand" title="Modifier le titre du site" aria-label="Modifier le titre du site" style="background:#ffffff; border-radius:50%; padding:4px; opacity:1;">'+pencilIconSVG()+'</button>' : '')+
+            '<span'+ce(inSettings)+(inSettings?' data-settings-field="texts.brand" data-placeholder="Nom du site"':'')+' style="font-size:'+brandSizeMap[brandSizeKey]+'; font-weight:'+(brandBold?800:500)+';'+(brandColor?' color:'+esc(brandColor)+';':'')+' font-family:'+heroFontMap[brandFontKey]+';">'+esc(brandText)+'</span>'+
+            (inSettings ? '<button type="button" class="field-edit-btn" id="brand-edit-toggle-btn" title="Modifier le titre du site" aria-label="Modifier le titre du site" style="background:#ffffff; border-radius:50%; padding:4px; opacity:1;">'+pencilIconSVG()+'</button>' : '')+
           '</div>'+
         '</div>'+
         '<div class="banner-title"><div style="position:relative;">'+
@@ -827,40 +860,8 @@
           (inSettings ? '<button type="button" class="field-edit-btn" id="hero-edit-toggle-btn" title="Modifier le titre principal" aria-label="Modifier le titre principal" style="position:absolute; top:-6px; right:-6px; background:#ffffff; border-radius:50%; padding:4px; opacity:1; box-shadow:0 1px 5px rgba(0,0,0,0.2);">'+pencilIconSVG()+'</button>' : '')+
         '</div></div>'+
       '</div>'+
-      (inSettings && ui.heroEditOpen ? '<div class="wrap" style="display:flex; justify-content:center; padding:10px 0 4px;">'+
-        '<div style="background:#ffffff; border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); padding:16px 18px; display:flex; flex-direction:column; gap:12px; max-width:560px; width:100%;">'+
-          '<div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">'+
-            '<button type="button" id="hero-bold-toggle" class="btn btn-ghost" style="padding:7px 14px; font-size:0.8rem; font-weight:'+(heroBold?'900':'400')+';'+(heroBold?' border-color:var(--sage); color:var(--sage-ink);':'')+'">Gras</button>'+
-            '<label style="display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:999px; padding:7px 14px; font-size:0.8rem; cursor:pointer;">'+
-              '<span>Taille</span>'+
-              '<select id="hero-size-select" style="border:none; background:transparent; font-size:0.8rem; cursor:pointer;">'+
-                '<option value="sm"'+(heroSizeKey==='sm'?' selected':'')+'>Petit</option>'+
-                '<option value="md"'+(heroSizeKey==='md'?' selected':'')+'>Moyen</option>'+
-                '<option value="lg"'+(heroSizeKey==='lg'?' selected':'')+'>Grand</option>'+
-              '</select>'+
-            '</label>'+
-            '<label style="display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:999px; padding:7px 14px; font-size:0.8rem; cursor:pointer;">'+
-              '<span>Police</span>'+
-              '<select id="hero-font-select" style="border:none; background:transparent; font-size:0.8rem; cursor:pointer;">'+
-                '<option value=""'+(heroFontKey===''?' selected':'')+'>Défaut</option>'+
-                '<option value="poppins"'+(heroFontKey==='poppins'?' selected':'')+'>Poppins</option>'+
-                '<option value="playfair"'+(heroFontKey==='playfair'?' selected':'')+'>Playfair</option>'+
-                '<option value="baloo"'+(heroFontKey==='baloo'?' selected':'')+'>Baloo</option>'+
-                '<option value="pacifico"'+(heroFontKey==='pacifico'?' selected':'')+'>Pacifico</option>'+
-              '</select>'+
-            '</label>'+
-          '</div>'+
-          '<div>'+
-            '<span style="font-size:0.78rem; color:var(--ink-soft); display:block; margin-bottom:6px;">Couleur du titre</span>'+
-            '<div class="card-color-palette" style="padding-top:0;">'+
-              PRESET_HUES.map(function(h){ return '<button type="button" class="palette-swatch'+(heroColor===h?' active':'')+'" data-hero-hue-val="'+h+'" style="background:'+h+';" aria-label="Choisir cette couleur"></button>'; }).join('')+
-              '<input type="color" class="palette-custom" id="hero-color-custom" value="'+(heroColor && heroColor.charAt(0)==='#' ? heroColor : '#2c2a22')+'">'+
-              '<button type="button" class="btn btn-ghost" id="hero-color-reset-btn" style="padding:5px 12px; font-size:0.74rem;">Réinitialiser</button>'+
-            '</div>'+
-          '</div>'+
-          '<button type="button" id="hero-edit-confirm-btn" class="btn btn-primary" style="align-self:flex-end; padding:8px 22px; display:inline-flex; align-items:center; gap:6px;"><span>✓</span><span>Valider</span></button>'+
-        '</div>'+
-      '</div>' : '')+
+      heroPopoverHTML+brandPopoverHTML+
+      '</div>'+
       '<div class="banner-actions-row"><div class="header-actions">'+navActionsHTML+'</div></div>'+
       '</div>'
     :
@@ -1277,6 +1278,7 @@
     var heroEditToggleBtn = document.getElementById('hero-edit-toggle-btn');
     if (heroEditToggleBtn) heroEditToggleBtn.addEventListener('click', function(){
       ui.heroEditOpen = !ui.heroEditOpen;
+      ui.brandEditOpen = false;
       render();
     });
     var heroEditConfirmBtn = document.getElementById('hero-edit-confirm-btn');
@@ -1298,11 +1300,48 @@
       var h1 = root.querySelector('.banner-title h1');
       if (h1) h1.style.color = heroColorCustom.value;
     });
-    var heroColorResetBtn = document.getElementById('hero-color-reset-btn');
-    if (heroColorResetBtn) heroColorResetBtn.addEventListener('click', function(){
-      settingsDraft.colors.heroTitleColor = '';
+    var brandBoldToggle = document.getElementById('brand-bold-toggle');
+    if (brandBoldToggle) brandBoldToggle.addEventListener('click', function(){
+      settingsDraft.colors.brandBold = !settingsDraft.colors.brandBold;
       markSettingsDirty();
       render();
+    });
+    var brandSizeSelect = document.getElementById('brand-size-select');
+    if (brandSizeSelect) brandSizeSelect.addEventListener('change', function(){
+      settingsDraft.colors.brandSize = brandSizeSelect.value;
+      markSettingsDirty();
+      render();
+    });
+    var brandFontSelect = document.getElementById('brand-font-select');
+    if (brandFontSelect) brandFontSelect.addEventListener('change', function(){
+      settingsDraft.colors.brandFont = brandFontSelect.value;
+      markSettingsDirty();
+      render();
+    });
+    var brandEditToggleBtn = document.getElementById('brand-edit-toggle-btn');
+    if (brandEditToggleBtn) brandEditToggleBtn.addEventListener('click', function(){
+      ui.brandEditOpen = !ui.brandEditOpen;
+      ui.heroEditOpen = false;
+      render();
+    });
+    var brandEditConfirmBtn = document.getElementById('brand-edit-confirm-btn');
+    if (brandEditConfirmBtn) brandEditConfirmBtn.addEventListener('click', function(){
+      ui.brandEditOpen = false;
+      render();
+    });
+    root.querySelectorAll('[data-brand-hue-val]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        settingsDraft.colors.brandColor = btn.getAttribute('data-brand-hue-val');
+        markSettingsDirty();
+        render();
+      });
+    });
+    var brandColorCustom = document.getElementById('brand-color-custom');
+    if (brandColorCustom) brandColorCustom.addEventListener('input', function(){
+      settingsDraft.colors.brandColor = brandColorCustom.value;
+      markSettingsDirty();
+      var brandSpan = root.querySelector('.banner-nav .brand span[data-settings-field="texts.brand"]');
+      if (brandSpan) brandSpan.style.color = brandColorCustom.value;
     });
     var bgImageInput = document.getElementById('bg-image-input');
     if (bgImageInput) bgImageInput.addEventListener('change', function(){
