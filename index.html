@@ -409,8 +409,8 @@
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5 19 9l-9.5 9.5-5 1 1-5 9-9Z"/><path d="M13 6l4.5 4.5"/></svg>';
   }
 
-  function stylePopoverHTML(idPrefix, sizeKey, sizeOptions, bold, fontKey, color, posStyle){
-    return '<div class="style-popover" style="position:absolute; '+posStyle+' z-index:30; background:#ffffff; border:1px solid var(--line); border-radius:14px; box-shadow:0 6px 22px rgba(0,0,0,0.2); padding:12px 14px; display:flex; flex-direction:column; gap:9px; width:216px;">'+
+  function stylePopoverHTML(idPrefix, sizeKey, sizeOptions, bold, fontKey, color, posStyle, width){
+    return '<div class="style-popover" style="position:absolute; '+posStyle+' z-index:30; background:#ffffff; border:1px solid var(--line); border-radius:14px; box-shadow:0 6px 22px rgba(0,0,0,0.2); padding:12px 14px; display:flex; flex-direction:column; gap:9px; width:'+(width||216)+'px;">'+
       '<div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">'+
         '<button type="button" id="'+idPrefix+'-bold-toggle" class="btn btn-ghost" title="Gras" aria-label="Gras" style="padding:5px 10px; font-size:0.72rem; font-weight:'+(bold?'900':'400')+';'+(bold?' border-color:var(--sage); color:var(--sage-ink);':'')+'">Gras</button>'+
         '<select id="'+idPrefix+'-size-select" title="Taille" style="border:1px solid var(--line); border-radius:999px; padding:5px 6px; font-size:0.72rem; cursor:pointer; background:#ffffff;">'+
@@ -835,7 +835,7 @@
     if (!heroFontMap[brandFontKey]) brandFontKey = '';
     var brandColor = (inSettings ? settingsDraft.colors.brandColor : SETTINGS.colors.brandColor) || '';
     var heroPopoverHTML = (inSettings && ui.heroEditOpen) ? stylePopoverHTML('hero', heroSizeKey, [{value:'sm',label:'Petit'},{value:'md',label:'Moyen'},{value:'lg',label:'Grand'}], heroBold, heroFontKey, heroColor, 'top:100%; left:16px; margin-top:10px;') : '';
-    var brandPopoverHTML = (inSettings && ui.brandEditOpen) ? stylePopoverHTML('brand', brandSizeKey, [{value:'sm',label:'Petit'},{value:'md',label:'Moyen'},{value:'lg',label:'Grand'}], brandBold, brandFontKey, brandColor, 'top:74px; left:16px;') : '';
+    var brandPopoverHTML = (inSettings && ui.brandEditOpen) ? stylePopoverHTML('brand', brandSizeKey, [{value:'sm',label:'Petit'},{value:'md',label:'Moyen'},{value:'lg',label:'Grand'}], brandBold, brandFontKey, brandColor, 'top:74px; left:16px;', 320) : '';
     var navActionsHTML = ''+
         (inSettings ? '<button id="home-btn" class="btn btn-ghost" type="button" style="background:#ffffff;">← Accueil</button>' : '')+
         authHeaderHTML()+
