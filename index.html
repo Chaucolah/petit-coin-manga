@@ -145,6 +145,7 @@
   .section-head{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px; margin-bottom:4px;}
   .catalog .sub{color:var(--ink-soft); font-size:0.94rem; margin:0 0 24px;}
   .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:20px;}
+  .grid.grid-editing{align-items:start;}
   .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column;}
   .cover{aspect-ratio:3/4; position:relative; display:flex; align-items:center; justify-content:center; color:#fff;}
   .cover svg{width:46%; height:46%; opacity:0.92;}
@@ -381,9 +382,9 @@
       });
   }
 
-  var ui = { view: 'boutique', filter: 'all', editingIdx: null, ficheModalOpen: false, cart: [], dirty: false, status: '', contactState: 'idle', colorEditIdx: null, heroEditOpen: false, brandEditOpen: false, navBtnEditOpen: false, texte3EditOpen: false,
+  var ui = { view: 'boutique', filter: 'all', editingIdx: null, ficheModalOpen: false, cart: [], dirty: false, status: '', contactState: 'idle', colorEditIdx: null, frameEditIdx: null, heroEditOpen: false, brandEditOpen: false, navBtnEditOpen: false, texte3EditOpen: false,
     auth: { session: null, mode: 'signup', status: '', busy: false, open: false } };
-  var PRESET_HUES = ['#6e9083', '#d9bdf0', '#b1852f', '#0de0c4', '#ff2996', '#e3c3bd', '#2c2a2e', '#3d6bd9', '#e63946', '#f3722c', '#f9c74f', '#90be6d', '#43aa8b', '#577590', '#9d4edd', '#f28482', '#7f5539', '#adb5bd'];
+  var PRESET_HUES = ['#6e9083', '#d9bdf0', '#b1852f', '#0de0c4', '#ff2996', '#e3c3bd', '#2c2a2e', '#3d6bd9', '#e63946', '#f3722c', '#f9c74f', '#90be6d', '#43aa8b', '#577590', '#9d4edd', '#f28482', '#7f5539', '#adb5bd', '#ffffff', '#000000', '#ff6b6b', '#ffa62b', '#ffe066', '#c3f584', '#4cc9f0', '#4361ee', '#7209b7', '#f72585', '#ff8fab', '#fca3b7', '#ffb4a2', '#e5989b', '#b5838d', '#84a98c', '#52796f', '#354f52', '#a68a64', '#dda15e', '#bc6c25', '#606c38', '#283618', '#8ecae6', '#219ebc', '#023047', '#ffb703', '#fb8500'];
   var root = document.getElementById('root');
   var outsideClickBound = false;
   var artifactCap = null;
@@ -521,7 +522,7 @@
       : '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3V4Z"/><path d="M18 20a3 3 0 0 0 0-6"/></svg>'+
         '<span class="photo-note">photo à venir</span>';
     return ''+
-      '<div class="card" data-card-idx="'+i+'" style="border:2px solid '+it.hue+';">'+
+      '<div class="card" data-card-idx="'+i+'" style="border:'+(it.borderWidth||'2px')+' solid '+(it.borderColor||it.hue)+';">'+
         '<div class="cover'+(it.sold?' is-sold':'')+'" style="background:linear-gradient(160deg,'+it.hue+', color-mix(in srgb, '+it.hue+' 60%, var(--ink) 15%))">'+
           (categoryBadge(it) ? '<span class="badge">'+esc(categoryBadge(it))+'</span>' : '')+
           (!it.sold && parseInt(it.remise, 10) > 0 ? '<span class="discount-badge">-'+parseInt(it.remise, 10)+'%</span>' : '')+
@@ -561,8 +562,20 @@
             (ui.colorEditIdx === i ?
               '<div class="card-color-palette">'+
                 PRESET_HUES.map(function(h){ return '<button type="button" class="palette-swatch'+(it.hue===h?' active':'')+'" data-hue-idx="'+i+'" data-hue-val="'+h+'" style="background:'+h+';" aria-label="Choisir cette couleur"></button>'; }).join('')+
-                '<input type="color" class="palette-custom" data-hue-input-idx="'+i+'" value="'+(it.hue && it.hue.charAt(0)==='#' ? it.hue : '#6e9083')+'">'+
                 '<button type="button" class="palette-confirm-btn" data-hue-confirm-idx="'+i+'" title="Valider" aria-label="Valider">✓</button>'+
+              '</div>'
+            : '')
+          : '')+
+          (forSettings ? '<button class="color-edit-btn" type="button" data-frame-edit-idx="'+i+'" style="margin-top:6px;">🖼️ Couleur du cadre</button>'+
+            (ui.frameEditIdx === i ?
+              '<div class="card-color-palette">'+
+                PRESET_HUES.map(function(h){ return '<button type="button" class="palette-swatch'+((it.borderColor||it.hue)===h?' active':'')+'" data-frame-hue-idx="'+i+'" data-frame-hue-val="'+h+'" style="background:'+h+';" aria-label="Choisir cette couleur"></button>'; }).join('')+
+                '<button type="button" class="palette-confirm-btn" data-frame-confirm-idx="'+i+'" title="Valider" aria-label="Valider">✓</button>'+
+              '</div>'+
+              '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; width:100%;">'+
+                [{value:'1px',label:'Fin'},{value:'2px',label:'Normal'},{value:'3px',label:'Moyen'},{value:'5px',label:'Épais'},{value:'8px',label:'Très épais'}].map(function(o){
+                  return '<button type="button" class="chip'+((it.borderWidth||'2px')===o.value?' active':'')+'" data-frame-width-idx="'+i+'" data-frame-width-val="'+o.value+'" style="padding:5px 12px; font-size:0.74rem;">'+o.label+'</button>';
+                }).join('')+
               '</div>'
             : '')
           : '')+
@@ -767,7 +780,7 @@
     var itemsHTML = ''+
       '<div style="margin-top:24px;">'+
         '<div class="section-head" style="background:#ffffff; border:1px solid var(--line); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow); margin-bottom:20px;"><div><h2 style="font-size:1.1rem; margin:0;">Tes fiches en ligne</h2><p style="color:var(--ink-soft); font-size:0.9rem; margin:4px 0 0;">'+STATE.items.length+' fiche'+(STATE.items.length>1?'s':'')+', visibles côté boutique'+(ui.editingIdx !== null?' · clique une fiche pour la modifier':'')+'</p></div></div>'+
-        '<div class="grid">'+STATE.items.map(function(it, i){ return cardHTML(it, i, true); }).join('')+'<button type="button" class="add-card" id="add-fiche-card"><span class="plus">+</span><span class="label">Ajouter un manga</span></button>'+'</div>'+
+        '<div class="grid'+(ui.editingIdx!==null?' grid-editing':'')+'">'+STATE.items.map(function(it, i){ return cardHTML(it, i, true); }).join('')+'<button type="button" class="add-card" id="add-fiche-card"><span class="plus">+</span><span class="label">Ajouter un manga</span></button>'+'</div>'+
       '</div>';
     return ''+
     '<div class="wrap vendre-page">'+
@@ -833,7 +846,7 @@
     if (!Array.isArray(settingsDraft.categories)) settingsDraft.categories = normalizeCategories(settingsDraft.categories);
     var catsDraft = settingsDraft.categories;
     var bgImg = settingsDraft.colors.bgImage;
-    var itemsHTML = '<div class="grid">'+STATE.items.map(function(it, i){ return cardHTML(it, i, true, true); }).join('')+'<button type="button" class="add-card" id="add-fiche-card"><span class="plus">+</span><span class="label">Ajouter un manga</span></button>'+'</div>';
+    var itemsHTML = '<div class="grid'+(ui.editingIdx!==null?' grid-editing':'')+'">'+STATE.items.map(function(it, i){ return cardHTML(it, i, true, true); }).join('')+'<button type="button" class="add-card" id="add-fiche-card"><span class="plus">+</span><span class="label">Ajouter un manga</span></button>'+'</div>';
     return ''+
     '<div class="wrap parametres-page">'+
       '<div class="settings-toolbar">'+
@@ -1025,7 +1038,7 @@
      ui.view === 'parametres' ? parametresHTML().replace('wrap parametres-page', 'parametres-page') : ''+
       '<section id="catalogue" class="catalog">'+
         '<div class="filters">'+chips+'</div>'+
-        '<div class="grid">'+cards+'</div>'+
+        '<div class="grid'+(ui.editingIdx!==null?' grid-editing':'')+'">'+cards+'</div>'+
         '<div class="catalog-sell-row"><a class="btn btn-primary" href="#vendre" data-view="vendre">Je vends un manga</a></div>'+
       '</section>')+
     '</main>'+
@@ -1267,19 +1280,42 @@
       });
     });
 
-    root.querySelectorAll('[data-hue-input-idx]').forEach(function(inp){
-      inp.addEventListener('input', function(){
-        var i = inp.getAttribute('data-hue-input-idx');
-        STATE.items[parseInt(i, 10)].hue = inp.value;
-        markDirty();
-        var cov = root.querySelector('.card[data-card-idx="'+i+'"] .cover');
-        if (cov) cov.style.background = 'linear-gradient(160deg,'+inp.value+', color-mix(in srgb, '+inp.value+' 60%, var(--ink) 15%))';
-      });
-    });
-
     root.querySelectorAll('[data-hue-confirm-idx]').forEach(function(btn){
       btn.addEventListener('click', function(){
         ui.colorEditIdx = null;
+        render();
+      });
+    });
+
+    root.querySelectorAll('[data-frame-edit-idx]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var i = parseInt(btn.getAttribute('data-frame-edit-idx'), 10);
+        ui.frameEditIdx = (ui.frameEditIdx === i) ? null : i;
+        render();
+      });
+    });
+
+    root.querySelectorAll('[data-frame-hue-idx]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var i = parseInt(btn.getAttribute('data-frame-hue-idx'), 10);
+        STATE.items[i].borderColor = btn.getAttribute('data-frame-hue-val');
+        markDirty();
+        render();
+      });
+    });
+
+    root.querySelectorAll('[data-frame-width-idx]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var i = parseInt(btn.getAttribute('data-frame-width-idx'), 10);
+        STATE.items[i].borderWidth = btn.getAttribute('data-frame-width-val');
+        markDirty();
+        render();
+      });
+    });
+
+    root.querySelectorAll('[data-frame-confirm-idx]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        ui.frameEditIdx = null;
         render();
       });
     });
